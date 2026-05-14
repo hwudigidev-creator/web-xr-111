@@ -154,7 +154,7 @@ fallback 至少需提供：
 ## 10. 使用流程
 
 1. 使用者在展場掃 QR Code 進入 WebAR 網址
-2. 首頁只顯示黑底白字展場主題標語「開始進行除錯...」
+2. 首頁只顯示展場主題標語「開始進行除錯...」，畫面為黑底並加入重度故障視覺：RGB 錯位、水平撕裂與色碼雜訊
 3. 使用者點擊標語
 4. 瀏覽器請求相機權限
 5. 進入全螢幕掃描畫面
@@ -304,7 +304,7 @@ WEBAR_README.md
 - 3D 模型以 target 圖面中心為底部對齊點，依 target `width` / `height` 自動縮放到圖像範圍內
 - 掃描畫面提供截圖與分享功能
 - 截圖合成順序為相機 video 背景在下、AR canvas 在上，並保留 WebGL drawing buffer 以避免模型缺失
-- 掃描畫面使用故障風格 overlay，並將 MindAR 追蹤濾波調為較即時的除錯模式
+- 首頁等待畫面使用重度故障視覺，掃描畫面使用較輕的故障風格 overlay，並將 MindAR 追蹤濾波調為較即時的除錯模式
 - 3D 模型使用 ACES tone mapping、固定補光與 `RoomEnvironment` 環境反射
 - exhibit 可用 `exposure`、`ambientIntensity`、`keyLightIntensity`、`environmentIntensity` 微調模型光感
 

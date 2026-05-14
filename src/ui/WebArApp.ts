@@ -41,8 +41,12 @@ export class WebArApp {
   private renderStartScreen(): void {
     this.root.innerHTML = `
       <main class="debug-start">
+        <div class="start-corruption" aria-hidden="true">
+          <span>0xE2</span><span>0x7F</span><span>SYS_ERR</span><span>RGB_SHIFT</span>
+          <span>SCAN//013</span><span>MEM_FAULT</span><span>0xC0FF</span><span>FRAME_DROP</span>
+        </div>
         <button class="debug-start-button" type="button" data-debug-start>
-          <strong>開始進行除錯...</strong>
+          <strong data-text="開始進行除錯...">開始進行除錯...</strong>
         </button>
       </main>
     `;
