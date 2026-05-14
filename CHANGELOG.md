@@ -7,6 +7,14 @@
 
 ---
 
+## [v0.1.0-20260515d] - 2026-05-15
+
+### Added
+- 模型下載進度顯示。GLTFLoader 改用 `loader.load` + `onProgress` 把 byte 進度往上吐，UI 在 `scanning` 階段顯示 `${exhibit.name} XX% / YY MB`，下載完成後自動切回「掃描中」。
+- 新增 `MindArSessionCallbacks.onContentProgress` 與 `onContentLoaded` 兩個回呼。
+
+---
+
 ## [v0.1.0-20260515c] - 2026-05-15
 
 ### Changed

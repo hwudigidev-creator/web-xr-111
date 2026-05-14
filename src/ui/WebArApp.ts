@@ -180,6 +180,20 @@ export class WebArApp {
       },
       onContentError: (exhibit, error) => {
         this.setStageCopy('error', '素材載入失敗', `${exhibit.name}: ${this.formatError(error)}`);
+      },
+      onContentProgress: (exhibit, loaded, total) => {
+        if (this.stageState !== 'scanning') {
+          return;
+        }
+        const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
+        const sizeMb = total > 0 ? (total / 1024 / 1024).toFixed(1) : '?';
+        this.setStageCopy('scanning', '下載模型中', `${exhibit.name} ${pct}% / ${sizeMb} MB`);
+      },
+      onContentLoaded: () => {
+        if (this.stageState !== 'scanning') {
+          return;
+        }
+        this.setStageCopy('scanning', '掃描中', '請對準 Target 圖。');
       }
     });
 

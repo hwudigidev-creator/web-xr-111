@@ -15,6 +15,8 @@ export interface MindArSessionCallbacks {
   onFound: (exhibit: Exhibit) => void;
   onLost: (exhibit: Exhibit) => void;
   onContentError?: (exhibit: Exhibit, error: unknown) => void;
+  onContentProgress?: (exhibit: Exhibit, loaded: number, total: number) => void;
+  onContentLoaded?: (exhibit: Exhibit) => void;
 }
 
 interface ContentItem {
@@ -115,6 +117,7 @@ export class MindArSession {
           contentGroup.add(contentItem.object);
           contentGroup.visible = isTargetVisible;
           this.contentItems.push(contentItem);
+          this.callbacks.onContentLoaded?.(exhibit);
 
           if (isTargetVisible) {
             this.handleTargetFound(contentItem);
@@ -241,7 +244,18 @@ export class MindArSession {
     let gltf: Awaited<ReturnType<typeof loader.loadAsync>>;
 
     try {
-      gltf = await loader.loadAsync(resolvePublicPath(exhibit.asset));
+      gltf = await new Promise((resolve, reject) => {
+        loader.load(
+          resolvePublicPath(exhibit.asset),
+          (result) => resolve(result),
+          (event) => {
+            if (event.lengthComputable) {
+              this.callbacks.onContentProgress?.(exhibit, event.loaded, event.total);
+            }
+          },
+          (error) => reject(error instanceof Error ? error : new Error('模型載入失敗'))
+        );
+      });
     } finally {
       dracoLoader.dispose();
     }
