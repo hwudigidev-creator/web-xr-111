@@ -1,0 +1,221 @@
+import type {
+  BufferGeometry,
+  Material,
+  Mesh,
+  Object3D,
+  Texture,
+  WebGLRenderer
+} from 'three';
+import { resolvePublicPath } from '../config/paths';
+import type { Exhibit } from '../types/exhibit';
+import { loadMindArImageRuntime, type MindARThreeInstance, type MindArAnchor } from './loadMindAr';
+
+export interface MindArSessionCallbacks {
+  onReady: () => void;
+  onFound: (exhibit: Exhibit) => void;
+  onLost: (exhibit: Exhibit) => void;
+}
+
+interface ContentItem {
+  exhibit: Exhibit;
+  object: Object3D;
+  videoElement?: HTMLVideoElement;
+}
+
+export class MindArSession {
+  private mindarThree?: MindARThreeInstance;
+  private anchors: MindArAnchor[] = [];
+  private renderer?: WebGLRenderer;
+  private contentItems: ContentItem[] = [];
+  private textures: Texture[] = [];
+
+  constructor(
+    private readonly container: HTMLElement,
+    private readonly exhibits: Exhibit[],
+    private readonly callbacks: MindArSessionCallbacks
+  ) {}
+
+  async start(): Promise<void> {
+    const THREE = await import('three');
+    const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+    const { MindARThree } = await loadMindArImageRuntime();
+
+    this.container.innerHTML = '';
+
+    this.mindarThree = new MindARThree({
+      container: this.container,
+      imageTargetSrc: resolvePublicPath(this.exhibits[0].target),
+      maxTrack: this.exhibits.length,
+      filterMinCF: 0.0001,
+      filterBeta: 0.001
+    });
+
+    const { renderer, scene, camera } = this.mindarThree;
+    this.renderer = renderer;
+
+    const ambientLight = new THREE.HemisphereLight(0xffffff, 0x243331, 1.6);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
+    keyLight.position.set(0.4, 1, 0.8);
+    scene.add(ambientLight, keyLight);
+
+    for (const exhibit of this.exhibits) {
+      const anchor = this.mindarThree.addAnchor(exhibit.markerIndex);
+      const contentItem = await this.createContent(THREE, GLTFLoader, exhibit);
+      contentItem.object.visible = false;
+      anchor.group.add(contentItem.object);
+
+      anchor.onTargetFound = () => {
+        contentItem.object.visible = true;
+        this.handleTargetFound(contentItem);
+        this.callbacks.onFound(exhibit);
+      };
+
+      anchor.onTargetLost = () => {
+        this.handleTargetLost(contentItem);
+        this.callbacks.onLost(exhibit);
+      };
+
+      this.anchors.push(anchor);
+      this.contentItems.push(contentItem);
+    }
+
+    await this.mindarThree.start();
+
+    renderer.setAnimationLoop(() => {
+      renderer.render(scene, camera);
+    });
+
+    this.callbacks.onReady();
+  }
+
+  async stop(): Promise<void> {
+    for (const item of this.contentItems) {
+      if (item.videoElement) {
+        item.videoElement.pause();
+        item.videoElement.removeAttribute('src');
+        item.videoElement.load();
+        item.videoElement.remove();
+      }
+    }
+
+    if (this.renderer) {
+      this.renderer.setAnimationLoop(null);
+    }
+
+    for (const item of this.contentItems) {
+      this.disposeObject(item.object);
+    }
+    this.contentItems = [];
+
+    for (const texture of this.textures) {
+      texture.dispose();
+    }
+    this.textures = [];
+
+    if (this.mindarThree) {
+      await this.mindarThree.stop();
+      this.mindarThree = undefined;
+    }
+
+    this.anchors = [];
+    this.renderer = undefined;
+    this.container.innerHTML = '';
+  }
+
+  private async createContent(
+    THREE: typeof import('three'),
+    GLTFLoader: typeof import('three/examples/jsm/loaders/GLTFLoader.js').GLTFLoader,
+    exhibit: Exhibit
+  ): Promise<ContentItem> {
+    if (exhibit.type === 'image') {
+      const texture = await new THREE.TextureLoader().loadAsync(resolvePublicPath(exhibit.asset));
+      texture.colorSpace = THREE.SRGBColorSpace;
+      this.textures.push(texture);
+
+      const geometry = new THREE.PlaneGeometry(exhibit.width, exhibit.height);
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide
+      });
+
+      return {
+        exhibit,
+        object: new THREE.Mesh(geometry, material)
+      };
+    }
+
+    if (exhibit.type === 'video') {
+      const video = document.createElement('video');
+      video.src = resolvePublicPath(exhibit.asset);
+      video.crossOrigin = 'anonymous';
+      video.muted = exhibit.muted;
+      video.loop = exhibit.loop;
+      video.playsInline = true;
+      video.preload = 'auto';
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+
+      const texture = new THREE.VideoTexture(video);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      this.textures.push(texture);
+
+      const geometry = new THREE.PlaneGeometry(exhibit.width, exhibit.height);
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+        toneMapped: false
+      });
+
+      return {
+        exhibit,
+        object: new THREE.Mesh(geometry, material),
+        videoElement: video
+      };
+    }
+
+    const loader = new GLTFLoader();
+    const gltf = await loader.loadAsync(resolvePublicPath(exhibit.asset));
+    const model = gltf.scene;
+    model.scale.setScalar(exhibit.scale);
+    model.position.set(0, 0, 0);
+    return {
+      exhibit,
+      object: model
+    };
+  }
+
+  private handleTargetFound(item: ContentItem): void {
+    if (item.exhibit.type === 'video' && item.exhibit.autoplay && item.videoElement) {
+      void item.videoElement.play();
+    }
+  }
+
+  private handleTargetLost(item: ContentItem): void {
+    if (item.exhibit.onLost === 'hide') {
+      item.object.visible = false;
+    }
+
+    if (item.exhibit.type === 'video' && item.exhibit.onLost === 'pause') {
+      item.videoElement?.pause();
+    }
+  }
+
+  private disposeObject(object: Object3D): void {
+    object.traverse((child) => {
+      const mesh = child as Mesh<BufferGeometry, Material | Material[]>;
+
+      if (mesh.geometry) {
+        mesh.geometry.dispose();
+      }
+
+      if (mesh.material) {
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+
+        for (const material of materials) {
+          material.dispose();
+        }
+      }
+    });
+  }
+}
