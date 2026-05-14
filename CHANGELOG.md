@@ -7,6 +7,13 @@
 
 ---
 
+## [v0.1.0-20260515e] - 2026-05-15
+
+### Fixed
+- AR 偵測到 target 後看不到模型。原因：`MindArSession.createContent` 對模型做置中位移時，`model.position` 使用未縮放的 bounding box 偏移量，而後續才 `setScalar(fitScale)` 將幾何縮小至約 1/775。位移量因未跟著被縮，導致模型被推到約 0.18 單位以外的位置（對 LinTea 來說 Z 中心是 -142，縮放後位移依舊 +142）。改成先 `setScalar`、再以 `-center * fitScale` 設定位移。Demo.glb 之前沒事是因為其 bounds 接近原點，offset 量級接近 0。
+
+---
+
 ## [v0.1.0-20260515d] - 2026-05-15
 
 ### Added

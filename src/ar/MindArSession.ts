@@ -271,8 +271,9 @@ export class MindArSession {
     const fitScale = Math.min(targetWidth / footprintWidth, targetHeight / footprintDepth) * exhibit.scale;
     const pivot = new THREE.Group();
 
-    model.position.set(-center.x, -box.min.y, -center.z);
+    // 先縮再位移，且把位移量乘上 fitScale，否則大模型（如 LinTea）的中心偏移會把幾何推到視野外。
     model.scale.setScalar(fitScale);
+    model.position.set(-center.x * fitScale, -box.min.y * fitScale, -center.z * fitScale);
     pivot.rotation.x = Math.PI / 2;
     pivot.add(model);
 
