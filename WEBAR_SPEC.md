@@ -305,6 +305,8 @@ WEBAR_README.md
 - 掃描畫面提供截圖與分享功能
 - 截圖合成順序為相機 video 背景在下、AR canvas 在上，並保留 WebGL drawing buffer 以避免模型缺失
 - 掃描畫面使用故障風格 overlay，並將 MindAR 追蹤濾波調為較即時的除錯模式
+- 3D 模型使用 ACES tone mapping、固定補光與 `RoomEnvironment` 環境反射
+- exhibit 可用 `exposure`、`ambientIntensity`、`keyLightIntensity`、`environmentIntensity` 微調模型光感
 
 第一輪手機驗收前，必須先補齊 `.mind`、`.glb`、`.mp4` 並更新 `src/config/exhibits.ts`。
 

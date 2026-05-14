@@ -13,6 +13,10 @@ export const exhibits: Exhibit[] = [
     width: 1,
     height: 0.5625,
     scale: 0.9,
+    exposure: 1.15,
+    ambientIntensity: 1.15,
+    keyLightIntensity: 2.35,
+    environmentIntensity: 1,
     onLost: 'hide',
     isAssetReady: true
   },

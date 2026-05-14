@@ -235,4 +235,12 @@ public/targets/demo-video.mind
 截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。
 追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。掃描畫面另有故障風格 overlay，讓現場視覺更貼近「開始進行除錯...」主題。
 
+目前模型光感使用三層設定：
+
+- ACES tone mapping 與曝光，避免模型過暗或過曝
+- HemisphereLight + DirectionalLight 作為穩定展場補光
+- Three.js `RoomEnvironment` 產生環境反射，支援 PBR / 金屬 / 亮面材質
+
+每個 exhibit 可在 `src/config/exhibits.ts` 另行設定 `exposure`、`ambientIntensity`、`keyLightIntensity`、`environmentIntensity`，方便不同模型微調。
+
 展區 B / C 仍是預留示範項目，正式的 `.mind`、`.glb`、`.mp4` 尚未放入前，介面會停用這兩個項目，避免誤判成相機或路徑錯誤。

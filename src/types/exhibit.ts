@@ -19,6 +19,10 @@ export interface ExhibitBase {
   loop?: boolean;
   onLost: ExhibitLostBehavior;
   isAssetReady: boolean;
+  exposure?: number;
+  ambientIntensity?: number;
+  keyLightIntensity?: number;
+  environmentIntensity?: number;
 }
 
 export interface ImageExhibit extends ExhibitBase {

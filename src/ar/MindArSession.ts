@@ -26,8 +26,12 @@ export class MindArSession {
   private mindarThree?: MindARThreeInstance;
   private anchors: MindArAnchor[] = [];
   private renderer?: WebGLRenderer;
+  private scene?: import('three').Scene;
+  private ambientLight?: import('three').HemisphereLight;
+  private keyLight?: import('three').DirectionalLight;
   private contentItems: ContentItem[] = [];
   private textures: Texture[] = [];
+  private environmentMap?: Texture;
 
   constructor(
     private readonly container: HTMLElement,
@@ -38,6 +42,7 @@ export class MindArSession {
   async start(): Promise<void> {
     const THREE = await import('three');
     const { GLTFLoader } = await import('three/examples/jsm/loaders/GLTFLoader.js');
+    const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
     const { MindARThree } = await loadMindArImageRuntime();
 
     this.container.innerHTML = '';
@@ -52,11 +57,23 @@ export class MindArSession {
 
     const { renderer, scene, camera } = this.mindarThree;
     this.renderer = renderer;
+    this.scene = scene;
+    const initialLighting = this.getLighting(this.exhibits[0]);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = initialLighting.exposure;
 
-    const ambientLight = new THREE.HemisphereLight(0xffffff, 0x243331, 1.6);
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
-    keyLight.position.set(0.4, 1, 0.8);
+    const ambientLight = new THREE.HemisphereLight(0xffffff, 0x2c3432, initialLighting.ambientIntensity);
+    const keyLight = new THREE.DirectionalLight(0xffffff, initialLighting.keyLightIntensity);
+    keyLight.position.set(0.35, 1.4, 0.95);
     scene.add(ambientLight, keyLight);
+    this.ambientLight = ambientLight;
+    this.keyLight = keyLight;
+
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    this.environmentMap = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = this.environmentMap;
+    scene.environmentIntensity = initialLighting.environmentIntensity;
+    pmremGenerator.dispose();
 
     for (const exhibit of this.exhibits) {
       const anchor = this.mindarThree.addAnchor(exhibit.markerIndex);
@@ -66,6 +83,7 @@ export class MindArSession {
 
       anchor.onTargetFound = () => {
         contentItem.object.visible = true;
+        this.applyLighting(exhibit);
         this.handleTargetFound(contentItem);
         this.callbacks.onFound(exhibit);
       };
@@ -112,6 +130,11 @@ export class MindArSession {
     }
     this.textures = [];
 
+    if (this.environmentMap) {
+      this.environmentMap.dispose();
+      this.environmentMap = undefined;
+    }
+
     if (this.mindarThree) {
       await this.mindarThree.stop();
       this.mindarThree = undefined;
@@ -119,6 +142,9 @@ export class MindArSession {
 
     this.anchors = [];
     this.renderer = undefined;
+    this.scene = undefined;
+    this.ambientLight = undefined;
+    this.keyLight = undefined;
     this.container.innerHTML = '';
   }
 
@@ -202,6 +228,38 @@ export class MindArSession {
     if (item.exhibit.type === 'video' && item.exhibit.autoplay && item.videoElement) {
       void item.videoElement.play();
     }
+  }
+
+  private applyLighting(exhibit: Exhibit): void {
+    const lighting = this.getLighting(exhibit);
+
+    if (this.renderer) {
+      this.renderer.toneMappingExposure = lighting.exposure;
+    }
+
+    if (this.ambientLight) {
+      this.ambientLight.intensity = lighting.ambientIntensity;
+    }
+
+    if (this.keyLight) {
+      this.keyLight.intensity = lighting.keyLightIntensity;
+    }
+
+    if (this.scene) {
+      this.scene.environmentIntensity = lighting.environmentIntensity;
+    }
+  }
+
+  private getLighting(exhibit: Exhibit): Required<Pick<
+    Exhibit,
+    'exposure' | 'ambientIntensity' | 'keyLightIntensity' | 'environmentIntensity'
+  >> {
+    return {
+      exposure: exhibit.exposure ?? 1.15,
+      ambientIntensity: exhibit.ambientIntensity ?? 1.15,
+      keyLightIntensity: exhibit.keyLightIntensity ?? 2.35,
+      environmentIntensity: exhibit.environmentIntensity ?? 1
+    };
   }
 
   private handleTargetLost(item: ContentItem): void {
