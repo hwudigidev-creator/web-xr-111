@@ -2,16 +2,15 @@ import type { Exhibit } from '../types/exhibit';
 
 export const exhibits: Exhibit[] = [
   {
-    id: 'demo-image',
-    name: '展區 A 圖像',
+    id: 'demo-model-on-current-target',
+    name: '展區 A 模型',
     zone: 'A',
     target: 'targets/demo-image.mind',
     markerIndex: 0,
-    type: 'image',
-    asset: 'assets/images/demo-overlay.svg',
-    preview: 'assets/images/demo-target.svg',
-    width: 1,
-    height: 0.62,
+    type: 'model',
+    asset: 'assets/models/Demo.glb',
+    preview: 'assets/images/model-placeholder.svg',
+    scale: 0.42,
     onLost: 'hide',
     isAssetReady: true
   },

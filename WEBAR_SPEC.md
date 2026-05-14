@@ -284,6 +284,7 @@ WEBAR_README.md
 
 - `public/targets/source/*.{jpg,png,webp}`
 - `public/targets/demo-image.mind`
+- `public/assets/models/Demo.glb`
 
 目前尚待替換的正式素材：
 
