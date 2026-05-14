@@ -7,6 +7,13 @@
 
 ---
 
+## [v0.1.0-20260515b] - 2026-05-15
+
+### Fixed
+- 部署後使用者仍看到 LinTea 模型載入失敗，根因是 GitHub Pages 對 `.glb` 仍走 10 分鐘 HTTP cache + service worker 殘留舊版資源。將 `APP_VERSION` 集中到 `src/config/version.ts`，並在 `resolvePublicPath` 對非 Draco decoder 路徑自動掛上 `?v=${APP_VERSION}` 作 cache busting。Service worker `CACHE_NAME` 同步從 `error-ar-v3` 升到 `error-ar-v4` 以汰換舊快取。
+
+---
+
 ## [v0.1.0-20260515a] - 2026-05-15
 
 當前線上 build 標籤，部署於 GitHub Pages（`hwudigidev-creator/web-xr-111`）。

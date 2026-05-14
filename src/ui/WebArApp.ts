@@ -2,6 +2,7 @@ import { MindArSession } from '../ar/MindArSession';
 import { verifyAssetFile, verifyTargetFile } from '../ar/assetChecks';
 import { verifyCameraAccess } from '../ar/cameraAccess';
 import { exhibits } from '../config/exhibits';
+import { APP_VERSION } from '../config/version';
 import type { Exhibit } from '../types/exhibit';
 import { escapeHtml } from './escape';
 
@@ -25,7 +26,6 @@ interface NavigatorWithStandalone extends Navigator {
 }
 
 const readyExhibits = exhibits.filter((exhibit) => exhibit.isAssetReady);
-const APP_VERSION = 'v0.1.0-20260515a';
 
 export class WebArApp {
   private isStarting = false;
