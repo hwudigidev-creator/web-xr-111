@@ -237,6 +237,7 @@ public/targets/demo-video.mind
 
 目前 marker 0 對應正式模型 `assets/models/LinTeaBuilding.glb`。模型已壓縮到約 7.9MB，並同步放在 `public/assets/models/` 與根目錄輸出用的 `assets/models/`。
 此模型使用 `KHR_draco_mesh_compression`，專案已在 `public/draco/` 放入 three.js Draco decoder，`GLTFLoader` 載入模型時會自動使用。
+AR 啟動順序為先啟動 MindAR 相機與掃描，再背景載入 3D 模型，避免模型解壓時讓手機停在黑畫面。
 
 網站已加入 PWA manifest 與 service worker，可安裝到手機主畫面。PWA icon 使用黑底白字 `ERROR`。
 

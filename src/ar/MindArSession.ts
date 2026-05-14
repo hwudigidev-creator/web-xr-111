@@ -76,27 +76,48 @@ export class MindArSession {
     scene.environmentIntensity = initialLighting.environmentIntensity;
     pmremGenerator.dispose();
 
-    for (const exhibit of this.exhibits) {
-      const anchor = this.mindarThree.addAnchor(exhibit.markerIndex);
-      const contentItem = await this.createContent(THREE, GLTFLoader, DRACOLoader, exhibit);
-      contentItem.object.visible = false;
-      anchor.group.add(contentItem.object);
+    const mindarThree = this.mindarThree;
+    const pendingContent = this.exhibits.map((exhibit) => {
+      const anchor = mindarThree.addAnchor(exhibit.markerIndex);
+      const contentGroup = new THREE.Group();
+      let contentItem: ContentItem | undefined;
+      let isTargetVisible = false;
+
+      contentGroup.visible = false;
+      anchor.group.add(contentGroup);
 
       anchor.onTargetFound = () => {
-        contentItem.object.visible = true;
+        isTargetVisible = true;
+        contentGroup.visible = contentItem !== undefined;
         this.applyLighting(exhibit);
-        this.handleTargetFound(contentItem);
+        if (contentItem) {
+          this.handleTargetFound(contentItem);
+        }
         this.callbacks.onFound(exhibit);
       };
 
       anchor.onTargetLost = () => {
-        this.handleTargetLost(contentItem);
+        isTargetVisible = false;
+        contentGroup.visible = false;
+        if (contentItem) {
+          this.handleTargetLost(contentItem);
+        }
         this.callbacks.onLost(exhibit);
       };
 
       this.anchors.push(anchor);
-      this.contentItems.push(contentItem);
-    }
+
+      return async () => {
+        contentItem = await this.createContent(THREE, GLTFLoader, DRACOLoader, exhibit);
+        contentGroup.add(contentItem.object);
+        contentGroup.visible = isTargetVisible;
+        this.contentItems.push(contentItem);
+
+        if (isTargetVisible) {
+          this.handleTargetFound(contentItem);
+        }
+      };
+    });
 
     await this.mindarThree.start();
 
@@ -105,6 +126,10 @@ export class MindArSession {
     });
 
     this.callbacks.onReady();
+
+    for (const loadContent of pendingContent) {
+      await loadContent();
+    }
   }
 
   async stop(): Promise<void> {
