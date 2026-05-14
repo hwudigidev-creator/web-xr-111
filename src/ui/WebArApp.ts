@@ -1,4 +1,6 @@
 import { MindArSession } from '../ar/MindArSession';
+import { verifyTargetFile } from '../ar/assetChecks';
+import { verifyCameraAccess } from '../ar/cameraAccess';
 import { exhibits } from '../config/exhibits';
 import { resolvePublicPath } from '../config/paths';
 import type { Exhibit } from '../types/exhibit';
@@ -233,9 +235,32 @@ export class WebArApp {
 
     this.isStarting = true;
     this.syncControls();
-    this.setStageCopy('loading', '載入 AR 場景', '正在讀取 target 與素材。');
+    this.setStageCopy('loading', '檢查相機權限', '手機可能會跳出相機授權視窗。');
 
     const exhibit = this.selectedExhibit;
+
+    try {
+      await verifyCameraAccess();
+    } catch (error) {
+      this.isStarting = false;
+      this.isRunning = false;
+      this.syncControls();
+      this.setStageCopy('error', '無法啟動相機', this.formatError(error));
+      return;
+    }
+
+    try {
+      this.setStageCopy('loading', '檢查 target 檔', `正在確認 ${exhibit.target}。`);
+      await verifyTargetFile(exhibit);
+      this.setStageCopy('loading', '載入 AR 場景', '正在讀取 target 與素材。');
+    } catch (error) {
+      this.isStarting = false;
+      this.isRunning = false;
+      this.syncControls();
+      this.setStageCopy('error', '找不到 target 檔', this.formatError(error));
+      return;
+    }
+
     const session = new MindArSession(stage, exhibit, {
       onReady: () => {
         this.isStarting = false;
@@ -261,7 +286,7 @@ export class WebArApp {
       this.session = undefined;
       await session.stop();
       this.syncControls();
-      this.setStageCopy('error', '無法啟動 AR', this.formatError(error));
+      this.setStageCopy('error', '無法啟動 AR', `${this.formatError(error)} 請確認 .mind 檔與素材路徑。`);
     }
   }
 

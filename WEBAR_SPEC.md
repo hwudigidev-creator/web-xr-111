@@ -282,12 +282,52 @@ WEBAR_README.md
 - `public/assets/videos/README.md`：`.mp4` 放置說明
 - `.github/workflows/deploy-pages.yml`：建置並同步 `gh-pages` 分支
 
+目前已放入的 target 素材：
+
+- `public/targets/source/*.{jpg,png,webp}`
+- `public/targets/demo-image.mind`
+
 目前尚待替換的正式素材：
 
-- `public/targets/demo-image.mind`
 - `public/targets/demo-model.mind`
 - `public/targets/demo-video.mind`
 - `public/assets/models/demo.glb`
 - `public/assets/videos/demo.mp4`
 
 第一輪手機驗收前，必須先補齊 `.mind`、`.glb`、`.mp4` 並更新 `src/config/exhibits.ts`。
+
+## 18. 手機相機啟動條件
+
+相機啟動前需通過以下檢查：
+
+- 頁面必須位於 secure context：HTTPS 或 localhost
+- 瀏覽器必須支援 `navigator.mediaDevices.getUserMedia`
+- 使用者需授權相機
+- 選定 exhibit 的 `.mind` target 檔必須可被 fetch 到
+
+若 `.mind` target 檔不存在，介面會顯示「找不到 target 檔」，避免使用者誤以為是手機相機壞掉。
+
+## 19. Target 圖與 `.mind` 編譯流程
+
+原始 target 圖放置於：
+
+```text
+public/targets/source/
+```
+
+編譯後 `.mind` 放置於：
+
+```text
+public/targets/
+```
+
+編譯流程：
+
+1. 將 JPG / PNG / WebP target 圖放入 `public/targets/source/`
+2. 使用 MindAR Image Targets Compiler 編譯
+3. 下載 `targets.mind`
+4. 依展區重新命名，例如 `demo-image.mind`
+5. 放入 `public/targets/`
+6. 更新 `src/config/exhibits.ts`
+
+注意：`.mind` 與印刷 target 圖必須版本一致。target 圖只要裁切、壓縮、改色、加字或重新輸出，就需要重新編譯 `.mind`。

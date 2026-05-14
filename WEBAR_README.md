@@ -180,6 +180,7 @@ src/
 目前 repo 只放可視覺檢查的 SVG 佔位圖，真正 AR 測試前需替換：
 
 ```text
+public/targets/source/*.{jpg,png,webp}
 public/targets/*.mind
 public/assets/models/*.glb
 public/assets/videos/*.mp4
@@ -187,3 +188,39 @@ src/config/exhibits.ts
 ```
 
 若 target 圖像更換，必須重新編譯 `.mind`，否則掃描會失敗。
+
+## `.mind` 產生方式
+
+`.mind` 是 MindAR 對 target 圖像做特徵點編譯後產生的檔案，不是直接把 JPG / PNG 改副檔名。
+
+操作流程：
+
+1. 將原始 target 圖放到 `public/targets/source/`
+2. 打開 MindAR Image Targets Compiler
+3. 把圖片拖進 compiler
+4. 點擊 `Start`
+5. 確認 feature points 分布足夠且平均
+6. 點擊 `Download` 取得 `targets.mind`
+7. 依展區改名，例如 `demo-image.mind`
+8. 放到 `public/targets/`
+9. 確認 `src/config/exhibits.ts` 的 `target` 欄位對到該檔案
+
+目前程式預設會找：
+
+```text
+public/targets/demo-image.mind
+public/targets/demo-model.mind
+public/targets/demo-video.mind
+```
+
+## 手機相機排錯
+
+若手機可開啟網站但相機不啟動，優先檢查：
+
+- 網址必須是 `https://hwudigidev-creator.github.io/web-xr-111/`
+- 瀏覽器需允許此網站使用相機
+- iOS 請用 Safari，Android 請用 Chrome
+- `public/targets/*.mind` 必須實際存在，不可只有 README
+- `src/config/exhibits.ts` 的 `target` 路徑必須對到已上傳的 `.mind`
+
+目前已使用 `public/targets/source/Target.png` 編譯出 `public/targets/demo-image.mind`，手機預設掃描展區 A 圖像。
