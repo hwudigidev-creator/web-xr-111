@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-labelledby="title desc">
+  <title id="title">Demo target placeholder</title>
+  <desc id="desc">A high contrast target placeholder for layout testing.</desc>
+  <rect width="900" height="900" fill="#fffdf8"/>
+  <path d="M0 0h900v900H0z" fill="#17201f"/>
+  <path d="M82 82h736v736H82z" fill="#fffdf8"/>
+  <path d="M136 136h210v210H136zM554 136h210v210H554zM136 554h210v210H136z" fill="#0f766e"/>
+  <path d="M415 154h70v592h-70zM154 415h592v70H154z" fill="#17201f"/>
+  <circle cx="659" cy="659" r="110" fill="#b45309"/>
+  <path d="m590 670 50-96 92 154z" fill="#fffdf8"/>
+  <path d="M432 432h36v36h-36zM236 236h34v34h-34zM632 236h34v34h-34zM236 632h34v34h-34z" fill="#fffdf8"/>
+</svg>
