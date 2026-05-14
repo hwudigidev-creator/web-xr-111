@@ -3,12 +3,12 @@ import type { Exhibit } from '../types/exhibit';
 export const exhibits: Exhibit[] = [
   {
     id: 'demo-model-on-current-target',
-    name: '展區 A 模型',
+    name: 'LinTea Building',
     zone: 'A',
     target: 'targets/demo-image.mind',
     markerIndex: 0,
     type: 'model',
-    asset: 'assets/models/Demo.glb',
+    asset: 'assets/models/LinTeaBuilding.glb',
     preview: 'assets/images/model-placeholder.svg',
     width: 1,
     height: 0.5625,
