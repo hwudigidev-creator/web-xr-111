@@ -190,6 +190,8 @@ src/config/exhibits.ts
 
 若 target 圖像更換，必須重新編譯 `.mind`，否則掃描會失敗。
 
+多個素材要自動判斷時，需把多張 target 圖一起編譯成同一個 `.mind` target set，並在 `src/config/exhibits.ts` 以不同 `markerIndex` 對應不同素材。使用者不需要選單，掃到哪個 target 就會自動顯示哪個素材。
+
 ## `.mind` 產生方式
 
 `.mind` 是 MindAR 對 target 圖像做特徵點編譯後產生的檔案，不是直接把 JPG / PNG 改副檔名。

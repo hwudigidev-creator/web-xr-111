@@ -12,21 +12,26 @@ import { loadMindArImageRuntime, type MindARThreeInstance, type MindArAnchor } f
 
 export interface MindArSessionCallbacks {
   onReady: () => void;
-  onFound: () => void;
-  onLost: () => void;
+  onFound: (exhibit: Exhibit) => void;
+  onLost: (exhibit: Exhibit) => void;
+}
+
+interface ContentItem {
+  exhibit: Exhibit;
+  object: Object3D;
+  videoElement?: HTMLVideoElement;
 }
 
 export class MindArSession {
   private mindarThree?: MindARThreeInstance;
-  private anchor?: MindArAnchor;
+  private anchors: MindArAnchor[] = [];
   private renderer?: WebGLRenderer;
-  private videoElement?: HTMLVideoElement;
-  private rootObject?: Object3D;
+  private contentItems: ContentItem[] = [];
   private textures: Texture[] = [];
 
   constructor(
     private readonly container: HTMLElement,
-    private readonly exhibit: Exhibit,
+    private readonly exhibits: Exhibit[],
     private readonly callbacks: MindArSessionCallbacks
   ) {}
 
@@ -39,38 +44,40 @@ export class MindArSession {
 
     this.mindarThree = new MindARThree({
       container: this.container,
-      imageTargetSrc: resolvePublicPath(this.exhibit.target),
-      maxTrack: 1,
+      imageTargetSrc: resolvePublicPath(this.exhibits[0].target),
+      maxTrack: this.exhibits.length,
       filterMinCF: 0.0001,
       filterBeta: 0.001
     });
 
     const { renderer, scene, camera } = this.mindarThree;
     this.renderer = renderer;
-    this.anchor = this.mindarThree.addAnchor(this.exhibit.markerIndex);
 
     const ambientLight = new THREE.HemisphereLight(0xffffff, 0x243331, 1.6);
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
     keyLight.position.set(0.4, 1, 0.8);
     scene.add(ambientLight, keyLight);
 
-    this.rootObject = await this.createContent(THREE, GLTFLoader);
-    this.rootObject.visible = false;
-    this.anchor.group.add(this.rootObject);
+    for (const exhibit of this.exhibits) {
+      const anchor = this.mindarThree.addAnchor(exhibit.markerIndex);
+      const contentItem = await this.createContent(THREE, GLTFLoader, exhibit);
+      contentItem.object.visible = false;
+      anchor.group.add(contentItem.object);
 
-    this.anchor.onTargetFound = () => {
-      if (this.rootObject) {
-        this.rootObject.visible = true;
-      }
+      anchor.onTargetFound = () => {
+        contentItem.object.visible = true;
+        this.handleTargetFound(contentItem);
+        this.callbacks.onFound(exhibit);
+      };
 
-      this.handleTargetFound();
-      this.callbacks.onFound();
-    };
+      anchor.onTargetLost = () => {
+        this.handleTargetLost(contentItem);
+        this.callbacks.onLost(exhibit);
+      };
 
-    this.anchor.onTargetLost = () => {
-      this.handleTargetLost();
-      this.callbacks.onLost();
-    };
+      this.anchors.push(anchor);
+      this.contentItems.push(contentItem);
+    }
 
     await this.mindarThree.start();
 
@@ -82,22 +89,23 @@ export class MindArSession {
   }
 
   async stop(): Promise<void> {
-    if (this.videoElement) {
-      this.videoElement.pause();
-      this.videoElement.removeAttribute('src');
-      this.videoElement.load();
-      this.videoElement.remove();
-      this.videoElement = undefined;
+    for (const item of this.contentItems) {
+      if (item.videoElement) {
+        item.videoElement.pause();
+        item.videoElement.removeAttribute('src');
+        item.videoElement.load();
+        item.videoElement.remove();
+      }
     }
 
     if (this.renderer) {
       this.renderer.setAnimationLoop(null);
     }
 
-    if (this.rootObject) {
-      this.disposeObject(this.rootObject);
-      this.rootObject = undefined;
+    for (const item of this.contentItems) {
+      this.disposeObject(item.object);
     }
+    this.contentItems = [];
 
     for (const texture of this.textures) {
       texture.dispose();
@@ -109,81 +117,87 @@ export class MindArSession {
       this.mindarThree = undefined;
     }
 
-    this.anchor = undefined;
+    this.anchors = [];
     this.renderer = undefined;
     this.container.innerHTML = '';
   }
 
   private async createContent(
     THREE: typeof import('three'),
-    GLTFLoader: typeof import('three/examples/jsm/loaders/GLTFLoader.js').GLTFLoader
-  ): Promise<Object3D> {
-    if (this.exhibit.type === 'image') {
-      const texture = await new THREE.TextureLoader().loadAsync(resolvePublicPath(this.exhibit.asset));
+    GLTFLoader: typeof import('three/examples/jsm/loaders/GLTFLoader.js').GLTFLoader,
+    exhibit: Exhibit
+  ): Promise<ContentItem> {
+    if (exhibit.type === 'image') {
+      const texture = await new THREE.TextureLoader().loadAsync(resolvePublicPath(exhibit.asset));
       texture.colorSpace = THREE.SRGBColorSpace;
       this.textures.push(texture);
 
-      const geometry = new THREE.PlaneGeometry(this.exhibit.width, this.exhibit.height);
+      const geometry = new THREE.PlaneGeometry(exhibit.width, exhibit.height);
       const material = new THREE.MeshBasicMaterial({
         map: texture,
         transparent: true,
         side: THREE.DoubleSide
       });
 
-      return new THREE.Mesh(geometry, material);
+      return {
+        exhibit,
+        object: new THREE.Mesh(geometry, material)
+      };
     }
 
-    if (this.exhibit.type === 'video') {
+    if (exhibit.type === 'video') {
       const video = document.createElement('video');
-      video.src = resolvePublicPath(this.exhibit.asset);
+      video.src = resolvePublicPath(exhibit.asset);
       video.crossOrigin = 'anonymous';
-      video.muted = this.exhibit.muted;
-      video.loop = this.exhibit.loop;
+      video.muted = exhibit.muted;
+      video.loop = exhibit.loop;
       video.playsInline = true;
       video.preload = 'auto';
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
-      this.videoElement = video;
 
       const texture = new THREE.VideoTexture(video);
       texture.colorSpace = THREE.SRGBColorSpace;
       this.textures.push(texture);
 
-      const geometry = new THREE.PlaneGeometry(this.exhibit.width, this.exhibit.height);
+      const geometry = new THREE.PlaneGeometry(exhibit.width, exhibit.height);
       const material = new THREE.MeshBasicMaterial({
         map: texture,
         side: THREE.DoubleSide,
         toneMapped: false
       });
 
-      return new THREE.Mesh(geometry, material);
+      return {
+        exhibit,
+        object: new THREE.Mesh(geometry, material),
+        videoElement: video
+      };
     }
 
     const loader = new GLTFLoader();
-    const gltf = await loader.loadAsync(resolvePublicPath(this.exhibit.asset));
+    const gltf = await loader.loadAsync(resolvePublicPath(exhibit.asset));
     const model = gltf.scene;
-    model.scale.setScalar(this.exhibit.scale);
+    model.scale.setScalar(exhibit.scale);
     model.position.set(0, 0, 0);
-    return model;
+    return {
+      exhibit,
+      object: model
+    };
   }
 
-  private handleTargetFound(): void {
-    if (this.exhibit.type === 'video' && this.exhibit.autoplay && this.videoElement) {
-      void this.videoElement.play();
+  private handleTargetFound(item: ContentItem): void {
+    if (item.exhibit.type === 'video' && item.exhibit.autoplay && item.videoElement) {
+      void item.videoElement.play();
     }
   }
 
-  private handleTargetLost(): void {
-    if (!this.rootObject) {
-      return;
+  private handleTargetLost(item: ContentItem): void {
+    if (item.exhibit.onLost === 'hide') {
+      item.object.visible = false;
     }
 
-    if (this.exhibit.onLost === 'hide') {
-      this.rootObject.visible = false;
-    }
-
-    if (this.exhibit.type === 'video' && this.exhibit.onLost === 'pause') {
-      this.videoElement?.pause();
+    if (item.exhibit.type === 'video' && item.exhibit.onLost === 'pause') {
+      item.videoElement?.pause();
     }
   }
 

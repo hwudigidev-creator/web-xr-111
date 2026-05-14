@@ -294,6 +294,13 @@ WEBAR_README.md
 
 在上述素材補齊前，介面只允許啟動展區 A 圖像，展區 B / C 會顯示為「素材待補」並停用。
 
+多素材自動判斷規則：
+
+- 可用素材需設定 `isAssetReady: true`
+- 多張 target 必須編譯進同一個 `.mind` target set
+- `src/config/exhibits.ts` 以 `markerIndex` 區分掃到的 target
+- 掃描介面不顯示清單，系統依 MindAR anchor found 事件自動顯示對應素材
+
 第一輪手機驗收前，必須先補齊 `.mind`、`.glb`、`.mp4` 並更新 `src/config/exhibits.ts`。
 
 ## 18. 手機相機啟動條件

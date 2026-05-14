@@ -29,14 +29,12 @@ export class WebArApp {
     this.renderStartScreen();
   }
 
-  private get activeExhibit(): Exhibit {
-    const exhibit = readyExhibits[0];
-
-    if (!exhibit) {
+  private get activeExhibits(): Exhibit[] {
+    if (readyExhibits.length === 0) {
       throw new Error('尚未設定任何可用的 AR 素材。');
     }
 
-    return exhibit;
+    return readyExhibits;
   }
 
   private renderStartScreen(): void {
@@ -82,10 +80,10 @@ export class WebArApp {
       return;
     }
 
-    let exhibit: Exhibit;
+    let activeExhibits: Exhibit[];
 
     try {
-      exhibit = this.activeExhibit;
+      activeExhibits = this.activeExhibits;
     } catch (error) {
       this.fail(this.formatError(error));
       return;
@@ -93,22 +91,27 @@ export class WebArApp {
 
     try {
       await verifyCameraAccess();
-      this.setStageCopy('loading', '檢查素材中', exhibit.name);
-      await verifyTargetFile(exhibit);
-      await verifyAssetFile(exhibit);
-      this.setStageCopy('loading', '載入 AR 中', exhibit.name);
+      this.setStageCopy('loading', '檢查素材中', `${activeExhibits.length} 組素材`);
+
+      for (const exhibit of activeExhibits) {
+        await verifyTargetFile(exhibit);
+        await verifyAssetFile(exhibit);
+      }
+
+      this.assertSingleTargetSet(activeExhibits);
+      this.setStageCopy('loading', '載入 AR 中', `${activeExhibits.length} 組素材`);
     } catch (error) {
       this.fail(this.formatError(error));
       return;
     }
 
-    const session = new MindArSession(stage, exhibit, {
+    const session = new MindArSession(stage, activeExhibits, {
       onReady: () => {
         this.isStarting = false;
         this.isRunning = true;
         this.setStageCopy('scanning', '掃描中', '請對準 Target 圖。');
       },
-      onFound: () => {
+      onFound: (exhibit) => {
         this.setStageCopy('found', '已偵測素材', exhibit.name);
       },
       onLost: () => {
@@ -128,6 +131,15 @@ export class WebArApp {
     this.isStarting = false;
     this.isRunning = false;
     this.setStageCopy('error', '無法啟動 AR', message);
+  }
+
+  private assertSingleTargetSet(activeExhibits: Exhibit[]): void {
+    const [firstExhibit] = activeExhibits;
+    const mismatchedExhibit = activeExhibits.find((exhibit) => exhibit.target !== firstExhibit.target);
+
+    if (mismatchedExhibit) {
+      throw new Error(`多素材自動判斷需要共用同一個 .mind target set，目前 ${mismatchedExhibit.name} 指向 ${mismatchedExhibit.target}。`);
+    }
   }
 
   private setStageCopy(
