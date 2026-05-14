@@ -275,6 +275,7 @@ WEBAR_README.md
 - `src/config/exhibits.ts`：展區 target 與素材設定
 - `src/types/exhibit.ts`：展區資料型別
 - `public/assets/images/*.svg`：demo 佔位圖
+- `public/.nojekyll`：GitHub Pages 不使用 Jekyll 處理靜態產物
 - `public/targets/README.md`：`.mind` 放置說明
 - `public/assets/models/README.md`：`.glb` 放置說明
 - `public/assets/videos/README.md`：`.mp4` 放置說明
