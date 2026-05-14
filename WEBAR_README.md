@@ -235,7 +235,7 @@ public/targets/demo-video.mind
 截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。
 追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。首頁等待畫面使用更重的故障視覺，包含 RGB 錯位、水平撕裂與色碼雜訊；掃描畫面另有較輕的故障風格 overlay，讓現場視覺更貼近「開始進行除錯...」主題。
 
-目前 marker 0 對應正式模型 `assets/models/LinTeaBuilding.glb`。此模型目前約 155MB，只能作為本機測試素材；GitHub 會拒絕超過 100MiB 的單檔，部署前必須壓縮到限制以下，或改用具備 CORS 的外部 CDN URL。
+目前 marker 0 對應正式模型 `assets/models/LinTeaBuilding.glb`。模型已壓縮到約 7.9MB，並同步放在 `public/assets/models/` 與根目錄輸出用的 `assets/models/`。
 
 目前模型光感使用三層設定：
 

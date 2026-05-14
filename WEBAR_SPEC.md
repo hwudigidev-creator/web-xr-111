@@ -307,7 +307,7 @@ WEBAR_README.md
 - 首頁等待畫面使用重度故障視覺，掃描畫面使用較輕的故障風格 overlay，並將 MindAR 追蹤濾波調為較即時的除錯模式
 - 3D 模型使用 ACES tone mapping、固定補光與 `RoomEnvironment` 環境反射
 - exhibit 可用 `exposure`、`ambientIntensity`、`keyLightIntensity`、`environmentIntensity` 微調模型光感
-- marker 0 目前對應正式模型 `assets/models/LinTeaBuilding.glb`；此模型約 155MB，超過 GitHub 單檔限制，部署前需壓縮或改用具備 CORS 的外部 CDN URL
+- marker 0 目前對應正式模型 `assets/models/LinTeaBuilding.glb`；模型已壓縮到約 7.9MB，低於 GitHub 單檔限制
 
 第一輪手機驗收前，必須先補齊 `.mind`、`.glb`、`.mp4` 並更新 `src/config/exhibits.ts`。
 
