@@ -56,6 +56,7 @@ export class WebArApp {
     this.root.innerHTML = `
       <main class="debug-scanner" data-stage-state="${this.stageState}">
         <div class="debug-ar-stage" data-ar-stage></div>
+        <div class="glitch-layer" aria-hidden="true"></div>
         <div class="debug-actions" aria-label="capture tools">
           <button class="debug-action-button" type="button" data-capture>截圖</button>
           <button class="debug-action-button" type="button" data-share>分享</button>

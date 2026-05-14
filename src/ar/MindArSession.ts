@@ -46,8 +46,8 @@ export class MindArSession {
       container: this.container,
       imageTargetSrc: resolvePublicPath(this.exhibits[0].target),
       maxTrack: this.exhibits.length,
-      filterMinCF: 0.0001,
-      filterBeta: 0.001
+      filterMinCF: 0.08,
+      filterBeta: 8
     });
 
     const { renderer, scene, camera } = this.mindarThree;

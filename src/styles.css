@@ -111,6 +111,98 @@ body {
   object-fit: cover;
 }
 
+.glitch-layer {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  overflow: hidden;
+  mix-blend-mode: screen;
+}
+
+.glitch-layer::before,
+.glitch-layer::after {
+  content: "";
+  position: absolute;
+  inset: -8%;
+}
+
+.glitch-layer::before {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgb(255 255 255 / 0%) 0,
+      rgb(255 255 255 / 0%) 7px,
+      rgb(255 255 255 / 14%) 8px,
+      rgb(255 255 255 / 0%) 10px
+    ),
+    linear-gradient(90deg, rgb(255 0 72 / 16%), rgb(0 255 255 / 14%));
+  opacity: 0.28;
+  animation: glitch-scan 1.6s steps(2, end) infinite;
+}
+
+.glitch-layer::after {
+  background:
+    linear-gradient(90deg, transparent 0 12%, rgb(255 255 255 / 18%) 14%, transparent 17%),
+    linear-gradient(180deg, transparent 0 45%, rgb(0 255 255 / 16%) 46%, transparent 49%);
+  clip-path: inset(12% 0 72% 0);
+  opacity: 0.34;
+  animation: glitch-slice 2.2s steps(1, end) infinite;
+}
+
+.debug-scanner[data-stage-state="found"] .glitch-layer::before {
+  opacity: 0.18;
+}
+
+@keyframes glitch-scan {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  18% {
+    transform: translate3d(-9px, 3px, 0);
+  }
+
+  19% {
+    transform: translate3d(8px, -2px, 0);
+  }
+
+  56% {
+    transform: translate3d(4px, 0, 0);
+  }
+
+  57% {
+    transform: translate3d(-5px, 2px, 0);
+  }
+}
+
+@keyframes glitch-slice {
+  0%,
+  22%,
+  44%,
+  67%,
+  100% {
+    clip-path: inset(90% 0 6% 0);
+    transform: translateX(0);
+  }
+
+  23% {
+    clip-path: inset(18% 0 68% 0);
+    transform: translateX(-18px);
+  }
+
+  45% {
+    clip-path: inset(52% 0 34% 0);
+    transform: translateX(14px);
+  }
+
+  68% {
+    clip-path: inset(35% 0 48% 0);
+    transform: translateX(-10px);
+  }
+}
+
 .debug-actions {
   position: fixed;
   top: max(12px, env(safe-area-inset-top));

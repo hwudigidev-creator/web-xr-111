@@ -233,5 +233,6 @@ public/targets/demo-video.mind
 
 掃描畫面提供「截圖」與「分享」按鈕。支援 Web Share 的手機會開啟原生分享，不支援時會下載 PNG 截圖。
 截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。
+追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。掃描畫面另有故障風格 overlay，讓現場視覺更貼近「開始進行除錯...」主題。
 
 展區 B / C 仍是預留示範項目，正式的 `.mind`、`.glb`、`.mp4` 尚未放入前，介面會停用這兩個項目，避免誤判成相機或路徑錯誤。

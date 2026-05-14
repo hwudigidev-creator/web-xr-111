@@ -304,6 +304,7 @@ WEBAR_README.md
 - 3D 模型以 target 圖面中心為底部對齊點，依 target `width` / `height` 自動縮放到圖像範圍內
 - 掃描畫面提供截圖與分享功能
 - 截圖合成順序為相機 video 背景在下、AR canvas 在上，並保留 WebGL drawing buffer 以避免模型缺失
+- 掃描畫面使用故障風格 overlay，並將 MindAR 追蹤濾波調為較即時的除錯模式
 
 第一輪手機驗收前，必須先補齊 `.mind`、`.glb`、`.mp4` 並更新 `src/config/exhibits.ts`。
 
