@@ -14,6 +14,7 @@ export interface MindArSessionCallbacks {
   onReady: () => void;
   onFound: (exhibit: Exhibit) => void;
   onLost: (exhibit: Exhibit) => void;
+  onContentError?: (exhibit: Exhibit, error: unknown) => void;
 }
 
 interface ContentItem {
@@ -107,14 +108,17 @@ export class MindArSession {
 
       this.anchors.push(anchor);
 
-      return async () => {
-        contentItem = await this.createContent(THREE, GLTFLoader, DRACOLoader, exhibit);
-        contentGroup.add(contentItem.object);
-        contentGroup.visible = isTargetVisible;
-        this.contentItems.push(contentItem);
+      return {
+        exhibit,
+        load: async () => {
+          contentItem = await this.createContent(THREE, GLTFLoader, DRACOLoader, exhibit);
+          contentGroup.add(contentItem.object);
+          contentGroup.visible = isTargetVisible;
+          this.contentItems.push(contentItem);
 
-        if (isTargetVisible) {
-          this.handleTargetFound(contentItem);
+          if (isTargetVisible) {
+            this.handleTargetFound(contentItem);
+          }
         }
       };
     });
@@ -127,8 +131,10 @@ export class MindArSession {
 
     this.callbacks.onReady();
 
-    for (const loadContent of pendingContent) {
-      await loadContent();
+    for (const pendingItem of pendingContent) {
+      void pendingItem.load().catch((error: unknown) => {
+        this.callbacks.onContentError?.(pendingItem.exhibit, error);
+      });
     }
   }
 

@@ -199,6 +199,23 @@ body {
   isolation: isolate;
 }
 
+.pwa-install-button {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  z-index: 4;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 0;
+  color: #ffffff;
+  background: rgb(0 0 0 / 68%);
+  cursor: pointer;
+  text-shadow:
+    2px 0 #ff174d,
+    -2px 0 #00f5ff;
+}
+
 .debug-start-button::before,
 .debug-start-button::after {
   content: "";

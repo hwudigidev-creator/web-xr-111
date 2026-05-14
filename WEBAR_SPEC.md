@@ -310,8 +310,8 @@ WEBAR_README.md
 - exhibit 可用 `exposure`、`ambientIntensity`、`keyLightIntensity`、`environmentIntensity` 微調模型光感
 - marker 0 目前對應正式模型 `assets/models/LinTeaBuilding.glb`；模型已壓縮到約 7.9MB，低於 GitHub 單檔限制
 - `LinTeaBuilding.glb` 使用 `KHR_draco_mesh_compression`，專案需隨站部署 `public/draco/` decoder
-- AR 啟動順序需先啟動 MindAR 相機與掃描，再背景載入 3D 模型，避免模型解壓時停在黑畫面
-- PWA manifest 與 service worker 已加入，icon 使用黑底白字 `ERROR`
+- AR 啟動順序需先啟動 MindAR 相機與掃描，再背景載入 3D 模型，避免模型解壓時停在黑畫面；模型載入錯誤不可中斷相機與掃描
+- PWA manifest 與 service worker 已加入，icon 使用黑底白字 `ERROR`；Android Chrome 可安裝時需在首頁顯示安裝按鈕，iOS Safari 仍走分享選單加入主畫面
 
 第一輪手機驗收前，必須先補齊 `.mind`、`.glb`、`.mp4` 並更新 `src/config/exhibits.ts`。
 

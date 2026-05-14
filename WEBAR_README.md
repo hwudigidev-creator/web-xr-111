@@ -228,7 +228,7 @@ public/targets/demo-video.mind
 - 若出現 `IMAGE.MindARThree is unavailable`，代表 runtime 載入方式或打包版本有問題，需確認 `src/vendor/mindar/` 已被建置進最新 GitHub Pages 產物
 
 目前已使用 `public/targets/source/Target.png` 編譯出 `public/targets/demo-image.mind`，手機預設掃描展區 A 圖像。
-展區 A 目前綁定 `public/assets/models/Demo.glb`，掃描目前這包 `.mind` 的 marker 0 會顯示測試模型。
+展區 A 目前綁定 `public/assets/models/LinTeaBuilding.glb`，掃描目前這包 `.mind` 的 marker 0 會顯示正式模型。
 模型會以 target 圖面中心為底部對齊點，依 `width` / `height` 自動縮放到圖像範圍內，並沿著 target 圖面法線向上顯示。
 
 掃描畫面提供「截圖」與「分享」按鈕。支援 Web Share 的手機會開啟原生分享，不支援時會下載 PNG 截圖。
@@ -237,9 +237,9 @@ public/targets/demo-video.mind
 
 目前 marker 0 對應正式模型 `assets/models/LinTeaBuilding.glb`。模型已壓縮到約 7.9MB，並同步放在 `public/assets/models/` 與根目錄輸出用的 `assets/models/`。
 此模型使用 `KHR_draco_mesh_compression`，專案已在 `public/draco/` 放入 three.js Draco decoder，`GLTFLoader` 載入模型時會自動使用。
-AR 啟動順序為先啟動 MindAR 相機與掃描，再背景載入 3D 模型，避免模型解壓時讓手機停在黑畫面。
+AR 啟動順序為先啟動 MindAR 相機與掃描，再背景載入 3D 模型，避免模型解壓時讓手機停在黑畫面。若模型或 decoder 載入失敗，鏡頭與掃描仍會維持啟動，錯誤會顯示在底部狀態列。
 
-網站已加入 PWA manifest 與 service worker，可安裝到手機主畫面。PWA icon 使用黑底白字 `ERROR`。
+網站已加入 PWA manifest 與 service worker，可安裝到手機主畫面。PWA icon 使用黑底白字 `ERROR`。Android Chrome 若判定可安裝，首頁右上會出現 `安裝 ERROR`；iOS Safari 不會觸發瀏覽器安裝事件，需用分享選單加入主畫面。
 
 目前模型光感使用三層設定：
 

@@ -12,11 +12,25 @@ interface StageCopy {
   body: string;
 }
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+}
+
+interface NavigatorWithStandalone extends Navigator {
+  standalone?: boolean;
+}
+
 const readyExhibits = exhibits.filter((exhibit) => exhibit.isAssetReady);
 
 export class WebArApp {
   private isStarting = false;
   private isRunning = false;
+  private isPwaInstallable = false;
+  private pwaInstallPrompt?: BeforeInstallPromptEvent;
   private lastCaptureUrl?: string;
   private stageState: StageState = 'idle';
   private stageCopy: StageCopy = {
@@ -24,7 +38,26 @@ export class WebArApp {
     body: ''
   };
 
-  constructor(private readonly root: HTMLElement) {}
+  constructor(private readonly root: HTMLElement) {
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      this.pwaInstallPrompt = event as BeforeInstallPromptEvent;
+      this.isPwaInstallable = true;
+
+      if (!this.isStarting && !this.isRunning) {
+        this.renderStartScreen();
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      this.pwaInstallPrompt = undefined;
+      this.isPwaInstallable = false;
+
+      if (!this.isStarting && !this.isRunning) {
+        this.renderStartScreen();
+      }
+    });
+  }
 
   mount(): void {
     this.renderStartScreen();
@@ -39,12 +72,15 @@ export class WebArApp {
   }
 
   private renderStartScreen(): void {
+    const showInstallButton = this.isPwaInstallable && !this.isStandaloneMode();
+
     this.root.innerHTML = `
       <main class="debug-start">
         <div class="start-corruption" aria-hidden="true">
           <span>0xE2</span><span>0x7F</span><span>SYS_ERR</span><span>RGB_SHIFT</span>
           <span>SCAN//013</span><span>MEM_FAULT</span><span>0xC0FF</span><span>FRAME_DROP</span>
         </div>
+        ${showInstallButton ? '<button class="pwa-install-button" type="button" data-install-pwa>安裝 ERROR</button>' : ''}
         <button class="debug-start-button" type="button" data-debug-start>
           <strong data-text="開始進行除錯...">開始進行除錯...</strong>
         </button>
@@ -53,6 +89,11 @@ export class WebArApp {
 
     this.root.querySelector<HTMLButtonElement>('[data-debug-start]')?.addEventListener('click', () => {
       void this.startDebug();
+    });
+
+    this.root.querySelector<HTMLButtonElement>('[data-install-pwa]')?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      void this.installPwa();
     });
   }
 
@@ -133,6 +174,9 @@ export class WebArApp {
       },
       onLost: () => {
         this.setStageCopy('lost', 'Target 遺失', '重新對準 Target 圖。');
+      },
+      onContentError: (exhibit, error) => {
+        this.setStageCopy('error', '素材載入失敗', `${exhibit.name}: ${this.formatError(error)}`);
       }
     });
 
@@ -148,6 +192,24 @@ export class WebArApp {
     this.isStarting = false;
     this.isRunning = false;
     this.setStageCopy('error', '無法啟動 AR', message);
+  }
+
+  private async installPwa(): Promise<void> {
+    if (!this.pwaInstallPrompt) {
+      return;
+    }
+
+    const prompt = this.pwaInstallPrompt;
+    this.pwaInstallPrompt = undefined;
+    this.isPwaInstallable = false;
+
+    await prompt.prompt();
+    await prompt.userChoice.catch(() => undefined);
+    this.renderStartScreen();
+  }
+
+  private isStandaloneMode(): boolean {
+    return window.matchMedia('(display-mode: standalone)').matches || (navigator as NavigatorWithStandalone).standalone === true;
   }
 
   private async captureStage(): Promise<Blob> {
