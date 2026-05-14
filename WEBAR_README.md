@@ -236,7 +236,7 @@ public/targets/demo-video.mind
 追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。首頁等待畫面使用偶發性故障視覺，RGB 錯位、水平撕裂與色碼雜訊會以低頻率錯開出現；掃描畫面另有較輕的故障風格 overlay，讓現場視覺更貼近「開始進行除錯...」主題。
 
 目前 marker 0 對應正式模型 `assets/models/LinTeaBuilding.glb`。模型已壓縮到約 7.9MB，並同步放在 `public/assets/models/` 與根目錄輸出用的 `assets/models/`。
-此模型使用 `KHR_draco_mesh_compression`，專案已在 `public/draco/` 放入 three.js Draco decoder，`GLTFLoader` 載入模型時會自動使用。
+此模型使用 `KHR_draco_mesh_compression`，專案已在 `public/draco/` 放入 three.js Draco decoder。`draco_wasm_wrapper.js` 會讀取 `draco_decoder_gltf.wasm`，所以需同時部署該檔，`GLTFLoader` 載入模型時會自動使用。
 AR 啟動順序為先啟動 MindAR 相機與掃描，再背景載入 3D 模型，避免模型解壓時讓手機停在黑畫面。若模型或 decoder 載入失敗，鏡頭與掃描仍會維持啟動，錯誤會顯示在底部狀態列。
 
 網站已加入 PWA manifest 與 service worker，可安裝到手機主畫面。PWA icon 使用黑底白字 `ERROR`。Android Chrome 若判定可安裝，首頁右上會出現 `安裝 ERROR`；iOS Safari 不會觸發瀏覽器安裝事件，需用分享選單加入主畫面。
