@@ -7,6 +7,14 @@
 
 ---
 
+## [v0.1.0-20260515c] - 2026-05-15
+
+### Changed
+- 替換 LinTea Building 為重新乾淨匯出的 GLB（紋理由 webp 改為 jpeg，檔案 7.9 MB → 15 MB；mesh 仍維持 Draco 壓縮）。textures[12] 的 patch 不再需要，模型本身已自洽。
+- 同步移除上一版 Known Issues。
+
+---
+
 ## [v0.1.0-20260515b] - 2026-05-15
 
 ### Fixed
@@ -36,7 +44,7 @@
 - 還原 GitHub Pages 部署 workflow、`package-lock.json` 與 build 用源碼（`208f858` / `46578f3` / `b482baa`）
 
 ### Known Issues
-- LinTeaBuilding.glb 的 `materials[27]`（屋頂1.1001）目前貼到「屋頂邊緣」這張 webp 紋理當佔位，視覺正確性未保證；正本清源需回 Blender 重新匯出乾淨的 GLB。
+- LinTeaBuilding.glb 的 `materials[27]`（屋頂1.1001）目前貼到「屋頂邊緣」這張 webp 紋理當佔位，視覺正確性未保證；正本清源需回 Blender 重新匯出乾淨的 GLB。（v0.1.0-20260515c 已解決）
 
 ---
 
