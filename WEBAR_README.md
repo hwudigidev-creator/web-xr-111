@@ -138,11 +138,11 @@ src/
 ## 使用流程
 
 1. 使用者掃 QR Code 進入網站
-2. 點擊開始
-3. 授權相機
-4. 對準展場圖標
-5. 掃描成功後顯示 AR 內容
-6. 可切換掃描其他圖標或進入 fallback 預覽
+2. 開場畫面顯示展場主題標語「開始進行除錯...」
+3. 使用者點擊標語
+4. 瀏覽器直接請求相機權限
+5. 對準展場圖標
+6. 掃描成功後自動顯示對應 AR 內容
 
 ## 驗收重點
 
@@ -226,3 +226,5 @@ public/targets/demo-video.mind
 - 若出現 `IMAGE.MindARThree is unavailable`，代表 runtime 載入方式或打包版本有問題，需確認 `src/vendor/mindar/` 已被建置進最新 GitHub Pages 產物
 
 目前已使用 `public/targets/source/Target.png` 編譯出 `public/targets/demo-image.mind`，手機預設掃描展區 A 圖像。
+
+展區 B / C 仍是預留示範項目，正式的 `.mind`、`.glb`、`.mp4` 尚未放入前，介面會停用這兩個項目，避免誤判成相機或路徑錯誤。

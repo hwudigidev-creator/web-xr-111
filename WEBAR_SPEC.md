@@ -154,15 +154,12 @@ fallback 至少需提供：
 ## 10. 使用流程
 
 1. 使用者在展場掃 QR Code 進入 WebAR 網址
-2. 首頁顯示開始按鈕與相機權限說明
-3. 使用者點擊開始
+2. 首頁只顯示黑底白字展場主題標語「開始進行除錯...」
+3. 使用者點擊標語
 4. 瀏覽器請求相機權限
-5. 進入掃描畫面
+5. 進入全螢幕掃描畫面
 6. 使用者將鏡頭對準指定圖標
-7. 掃描成功後顯示對應 2D / 3D / 影片內容
-8. 使用者可重新掃描其他圖標
-9. 若支援 World Placement，可切換空間放置模式
-10. 若不支援 AR，進入 fallback 預覽頁
+7. 掃描成功後自動顯示對應 2D / 3D / 影片內容
 
 ## 11. 建議資料結構
 
@@ -294,6 +291,8 @@ WEBAR_README.md
 - `public/targets/demo-video.mind`
 - `public/assets/models/demo.glb`
 - `public/assets/videos/demo.mp4`
+
+在上述素材補齊前，介面只允許啟動展區 A 圖像，展區 B / C 會顯示為「素材待補」並停用。
 
 第一輪手機驗收前，必須先補齊 `.mind`、`.glb`、`.mp4` 並更新 `src/config/exhibits.ts`。
 

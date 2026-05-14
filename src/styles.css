@@ -39,6 +39,107 @@ body {
     #f4f1ea;
 }
 
+.debug-start,
+.debug-scanner {
+  width: 100%;
+  min-height: 100dvh;
+  background: #000000;
+  color: #ffffff;
+}
+
+.debug-start {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.debug-start-button {
+  display: grid;
+  gap: 14px;
+  width: min(680px, 100%);
+  min-height: 52dvh;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 0;
+  color: #ffffff;
+  background: #000000;
+  cursor: pointer;
+  place-items: center;
+  text-align: center;
+}
+
+.debug-start-button span,
+.debug-start-button strong {
+  display: block;
+}
+
+.debug-start-button span {
+  align-self: end;
+  color: rgb(255 255 255 / 62%);
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.debug-start-button strong {
+  align-self: start;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(2.25rem, 12vw, 7rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.debug-scanner {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.debug-ar-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.debug-status {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 10;
+  display: grid;
+  gap: 4px;
+  max-width: 520px;
+  padding: 12px 14px;
+  color: #ffffff;
+  background: rgb(0 0 0 / 62%);
+  border: 1px solid rgb(255 255 255 / 14%);
+}
+
+.debug-status strong,
+.debug-status span {
+  overflow-wrap: anywhere;
+}
+
+.debug-status strong {
+  font-size: 0.95rem;
+}
+
+.debug-status span {
+  color: rgb(255 255 255 / 78%);
+  font-size: 0.85rem;
+}
+
+.debug-scanner[data-stage-state="found"] .debug-status {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.debug-scanner[data-stage-state="error"] .debug-status {
+  background: rgb(96 8 8 / 86%);
+  opacity: 1;
+}
+
 button,
 input,
 textarea,
@@ -170,6 +271,13 @@ p {
   background: var(--primary-strong);
 }
 
+.primary-button:disabled,
+.secondary-button:disabled,
+.target-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
 .secondary-button {
   color: var(--ink);
   background: var(--surface-muted);
@@ -249,7 +357,7 @@ button:disabled {
   text-align: left;
 }
 
-.target-button:hover,
+.target-button:hover:not(:disabled),
 .target-button[aria-pressed="true"] {
   border-color: var(--primary);
   background: #eef7f4;
