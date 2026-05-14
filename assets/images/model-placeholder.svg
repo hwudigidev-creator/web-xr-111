@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 675" role="img" aria-labelledby="title desc">
+  <title id="title">Model placeholder</title>
+  <desc id="desc">A placeholder graphic for a 3D model preview.</desc>
+  <rect width="900" height="675" fill="#e7e0d3"/>
+  <path d="M450 102 718 248v176L450 573 182 424V248z" fill="#17201f"/>
+  <path d="M450 102v292l268-146z" fill="#0f766e"/>
+  <path d="M450 394v179l268-149V248z" fill="#0a4f4a"/>
+  <path d="M450 394 182 248v176l268 149z" fill="#b45309"/>
+  <path d="M182 248 450 102l268 146-268 146z" fill="#fffdf8" opacity=".84"/>
+</svg>

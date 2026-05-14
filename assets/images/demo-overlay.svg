@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 744" role="img" aria-labelledby="title desc">
+  <title id="title">AR overlay placeholder</title>
+  <desc id="desc">A clean exhibition information panel placeholder.</desc>
+  <rect width="1200" height="744" fill="#fffdf8"/>
+  <rect x="64" y="64" width="1072" height="616" rx="28" fill="#17201f"/>
+  <rect x="104" y="104" width="360" height="536" rx="18" fill="#0f766e"/>
+  <rect x="512" y="120" width="420" height="42" rx="8" fill="#f4f1ea"/>
+  <rect x="512" y="202" width="540" height="24" rx="6" fill="#d9d2c4"/>
+  <rect x="512" y="252" width="486" height="24" rx="6" fill="#d9d2c4"/>
+  <rect x="512" y="302" width="520" height="24" rx="6" fill="#d9d2c4"/>
+  <circle cx="284" cy="272" r="116" fill="#fffdf8"/>
+  <path d="M224 374 284 164l60 210h-52l-8-44h-56l-9 44z" fill="#b45309"/>
+  <rect x="512" y="486" width="250" height="70" rx="12" fill="#b45309"/>
+  <rect x="790" y="486" width="168" height="70" rx="12" fill="#fffdf8" opacity=".88"/>
+</svg>
