@@ -229,5 +229,8 @@ public/targets/demo-video.mind
 
 目前已使用 `public/targets/source/Target.png` 編譯出 `public/targets/demo-image.mind`，手機預設掃描展區 A 圖像。
 展區 A 目前綁定 `public/assets/models/Demo.glb`，掃描目前這包 `.mind` 的 marker 0 會顯示測試模型。
+模型會以 target 圖面中心為底部對齊點，依 `width` / `height` 自動縮放到圖像範圍內，並沿著 target 圖面法線向上顯示。
+
+掃描畫面提供「截圖」與「分享」按鈕。支援 Web Share 的手機會開啟原生分享，不支援時會下載 PNG 截圖。
 
 展區 B / C 仍是預留示範項目，正式的 `.mind`、`.glb`、`.mp4` 尚未放入前，介面會停用這兩個項目，避免誤判成相機或路徑錯誤。

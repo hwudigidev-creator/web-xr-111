@@ -301,6 +301,8 @@ WEBAR_README.md
 - 多張 target 必須編譯進同一個 `.mind` target set
 - `src/config/exhibits.ts` 以 `markerIndex` 區分掃到的 target
 - 掃描介面不顯示清單，系統依 MindAR anchor found 事件自動顯示對應素材
+- 3D 模型以 target 圖面中心為底部對齊點，依 target `width` / `height` 自動縮放到圖像範圍內
+- 掃描畫面提供截圖與分享功能
 
 第一輪手機驗收前，必須先補齊 `.mind`、`.glb`、`.mp4` 並更新 `src/config/exhibits.ts`。
 

@@ -177,11 +177,24 @@ export class MindArSession {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(resolvePublicPath(exhibit.asset));
     const model = gltf.scene;
-    model.scale.setScalar(exhibit.scale);
-    model.position.set(0, 0, 0);
+    const targetWidth = exhibit.width ?? 1;
+    const targetHeight = exhibit.height ?? targetWidth;
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const footprintWidth = Math.max(size.x, 0.0001);
+    const footprintDepth = Math.max(size.z, 0.0001);
+    const fitScale = Math.min(targetWidth / footprintWidth, targetHeight / footprintDepth) * exhibit.scale;
+    const pivot = new THREE.Group();
+
+    model.position.set(-center.x, -box.min.y, -center.z);
+    model.scale.setScalar(fitScale);
+    pivot.rotation.x = Math.PI / 2;
+    pivot.add(model);
+
     return {
       exhibit,
-      object: model
+      object: pivot
     };
   }
 

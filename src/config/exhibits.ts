@@ -10,7 +10,9 @@ export const exhibits: Exhibit[] = [
     type: 'model',
     asset: 'assets/models/Demo.glb',
     preview: 'assets/images/model-placeholder.svg',
-    scale: 0.42,
+    width: 1,
+    height: 0.5625,
+    scale: 0.9,
     onLost: 'hide',
     isAssetReady: true
   },

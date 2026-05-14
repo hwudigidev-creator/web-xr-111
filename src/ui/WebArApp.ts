@@ -17,6 +17,7 @@ const readyExhibits = exhibits.filter((exhibit) => exhibit.isAssetReady);
 export class WebArApp {
   private isStarting = false;
   private isRunning = false;
+  private lastCaptureUrl?: string;
   private stageState: StageState = 'idle';
   private stageCopy: StageCopy = {
     title: '開始進行除錯...',
@@ -41,7 +42,6 @@ export class WebArApp {
     this.root.innerHTML = `
       <main class="debug-start">
         <button class="debug-start-button" type="button" data-debug-start>
-          <span>展場主題</span>
           <strong>開始進行除錯...</strong>
         </button>
       </main>
@@ -56,12 +56,24 @@ export class WebArApp {
     this.root.innerHTML = `
       <main class="debug-scanner" data-stage-state="${this.stageState}">
         <div class="debug-ar-stage" data-ar-stage></div>
+        <div class="debug-actions" aria-label="capture tools">
+          <button class="debug-action-button" type="button" data-capture>截圖</button>
+          <button class="debug-action-button" type="button" data-share>分享</button>
+        </div>
         <div class="debug-status" aria-live="polite">
           <strong data-stage-title>${escapeHtml(this.stageCopy.title)}</strong>
           <span data-stage-body>${escapeHtml(this.stageCopy.body)}</span>
         </div>
       </main>
     `;
+
+    this.root.querySelector<HTMLButtonElement>('[data-capture]')?.addEventListener('click', () => {
+      void this.captureStage();
+    });
+
+    this.root.querySelector<HTMLButtonElement>('[data-share]')?.addEventListener('click', () => {
+      void this.shareStage();
+    });
   }
 
   private async startDebug(): Promise<void> {
@@ -131,6 +143,97 @@ export class WebArApp {
     this.isStarting = false;
     this.isRunning = false;
     this.setStageCopy('error', '無法啟動 AR', message);
+  }
+
+  private async captureStage(): Promise<Blob> {
+    const blob = await this.renderStageBlob();
+
+    if (this.lastCaptureUrl) {
+      URL.revokeObjectURL(this.lastCaptureUrl);
+    }
+
+    this.lastCaptureUrl = URL.createObjectURL(blob);
+    this.setStageCopy('scanning', '截圖已建立', '可直接分享或下載。');
+    return blob;
+  }
+
+  private async shareStage(): Promise<void> {
+    const blob = await this.renderStageBlob();
+    const file = new File([blob], `webar-${Date.now()}.png`, {
+      type: 'image/png'
+    });
+
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'WebAR 截圖'
+      });
+      return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = file.name;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private async renderStageBlob(): Promise<Blob> {
+    const stage = this.root.querySelector<HTMLElement>('[data-ar-stage]');
+
+    if (!stage) {
+      throw new Error('找不到 AR 畫面。');
+    }
+
+    const bounds = stage.getBoundingClientRect();
+    const scale = Math.min(window.devicePixelRatio || 1, 2);
+    const output = document.createElement('canvas');
+    output.width = Math.max(1, Math.round(bounds.width * scale));
+    output.height = Math.max(1, Math.round(bounds.height * scale));
+
+    const context = output.getContext('2d');
+
+    if (!context) {
+      throw new Error('無法建立截圖。');
+    }
+
+    context.scale(scale, scale);
+    context.fillStyle = '#000000';
+    context.fillRect(0, 0, bounds.width, bounds.height);
+
+    const layers = stage.querySelectorAll<HTMLVideoElement | HTMLCanvasElement>('video, canvas');
+
+    for (const layer of layers) {
+      this.drawStageLayer(context, layer, bounds);
+    }
+
+    return await new Promise<Blob>((resolve, reject) => {
+      output.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('無法輸出截圖。'));
+          return;
+        }
+
+        resolve(blob);
+      }, 'image/png');
+    });
+  }
+
+  private drawStageLayer(
+    context: CanvasRenderingContext2D,
+    layer: HTMLVideoElement | HTMLCanvasElement,
+    stageBounds: DOMRect
+  ): void {
+    const bounds = layer.getBoundingClientRect();
+    const x = bounds.left - stageBounds.left;
+    const y = bounds.top - stageBounds.top;
+
+    try {
+      context.drawImage(layer, x, y, bounds.width, bounds.height);
+    } catch {
+      // Some WebGL frames cannot be captured on every browser. Keep the camera capture usable.
+    }
   }
 
   private assertSingleTargetSet(activeExhibits: Exhibit[]): void {
