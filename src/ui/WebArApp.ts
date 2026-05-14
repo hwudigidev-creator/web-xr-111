@@ -25,6 +25,7 @@ interface NavigatorWithStandalone extends Navigator {
 }
 
 const readyExhibits = exhibits.filter((exhibit) => exhibit.isAssetReady);
+const APP_VERSION = 'v0.1.0-20260515a';
 
 export class WebArApp {
   private isStarting = false;
@@ -84,6 +85,7 @@ export class WebArApp {
         <button class="debug-start-button" type="button" data-debug-start>
           <strong data-text="開始進行除錯...">開始進行除錯...</strong>
         </button>
+        <div class="debug-version" aria-label="build version">${APP_VERSION}</div>
       </main>
     `;
 
@@ -110,6 +112,7 @@ export class WebArApp {
           <strong data-stage-title>${escapeHtml(this.stageCopy.title)}</strong>
           <span data-stage-body>${escapeHtml(this.stageCopy.body)}</span>
         </div>
+        <div class="debug-version" aria-label="build version">${APP_VERSION}</div>
       </main>
     `;
 

@@ -240,6 +240,7 @@ public/targets/demo-video.mind
 AR 啟動順序為先啟動 MindAR 相機與掃描，再背景載入 3D 模型，避免模型解壓時讓手機停在黑畫面。若模型或 decoder 載入失敗，鏡頭與掃描仍會維持啟動，錯誤會顯示在底部狀態列。
 
 網站已加入 PWA manifest 與 service worker，可安裝到手機主畫面。PWA icon 使用黑底白字 `ERROR`。Android Chrome 若判定可安裝，首頁右上會出現 `安裝 ERROR`；iOS Safari 不會觸發瀏覽器安裝事件，需用分享選單加入主畫面。
+首頁與掃描畫面右下角會顯示 build label，例如 `v0.1.0-20260515a`，方便現場確認手機不是載入舊快取版本。
 
 目前模型光感使用三層設定：
 

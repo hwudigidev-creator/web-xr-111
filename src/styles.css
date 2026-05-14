@@ -216,6 +216,24 @@ body {
     -2px 0 #00f5ff;
 }
 
+.debug-version {
+  pointer-events: none;
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 30;
+  padding: 4px 7px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  color: rgb(255 255 255 / 72%);
+  background: rgb(0 0 0 / 58%);
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 0.68rem;
+  line-height: 1;
+  text-shadow:
+    1px 0 #ff174d,
+    -1px 0 #00f5ff;
+}
+
 .debug-start-button::before,
 .debug-start-button::after {
   content: "";
@@ -608,7 +626,7 @@ body {
 .debug-status {
   position: fixed;
   right: 16px;
-  bottom: 16px;
+  bottom: 44px;
   left: 16px;
   z-index: 10;
   display: grid;
