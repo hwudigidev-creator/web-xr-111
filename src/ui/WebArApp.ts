@@ -202,9 +202,16 @@ export class WebArApp {
     context.fillStyle = '#000000';
     context.fillRect(0, 0, bounds.width, bounds.height);
 
-    const layers = stage.querySelectorAll<HTMLVideoElement | HTMLCanvasElement>('video, canvas');
+    const videos = stage.querySelectorAll<HTMLVideoElement>('video');
+    const canvases = stage.querySelectorAll<HTMLCanvasElement>('canvas');
 
-    for (const layer of layers) {
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    for (const layer of videos) {
+      this.drawStageLayer(context, layer, bounds);
+    }
+
+    for (const layer of canvases) {
       this.drawStageLayer(context, layer, bounds);
     }
 

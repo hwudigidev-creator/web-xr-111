@@ -232,5 +232,6 @@ public/targets/demo-video.mind
 模型會以 target 圖面中心為底部對齊點，依 `width` / `height` 自動縮放到圖像範圍內，並沿著 target 圖面法線向上顯示。
 
 掃描畫面提供「截圖」與「分享」按鈕。支援 Web Share 的手機會開啟原生分享，不支援時會下載 PNG 截圖。
+截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。
 
 展區 B / C 仍是預留示範項目，正式的 `.mind`、`.glb`、`.mp4` 尚未放入前，介面會停用這兩個項目，避免誤判成相機或路徑錯誤。
