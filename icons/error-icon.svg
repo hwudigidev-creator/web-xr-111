@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ERROR">
+  <rect width="512" height="512" fill="#000000"/>
+  <text x="256" y="284" text-anchor="middle" fill="#ffffff" font-family="Arial Black, Impact, sans-serif" font-size="104" font-weight="900" letter-spacing="0">ERROR</text>
+  <rect x="52" y="166" width="408" height="10" fill="#ffffff" opacity="0.9"/>
+  <rect x="52" y="334" width="408" height="10" fill="#ffffff" opacity="0.9"/>
+</svg>
