@@ -268,6 +268,7 @@ WEBAR_README.md
 已完成第一階段前端骨架：
 
 - `index.html`：靜態入口
+- `src/index.html`：Vite 開發與建置入口
 - `src/main.ts`：應用啟動
 - `src/ui/WebArApp.ts`：掃描 / 預覽介面與互動狀態
 - `src/ui/FallbackPreview.ts`：fallback 內容預覽
@@ -279,7 +280,7 @@ WEBAR_README.md
 - `public/targets/README.md`：`.mind` 放置說明
 - `public/assets/models/README.md`：`.glb` 放置說明
 - `public/assets/videos/README.md`：`.mp4` 放置說明
-- `.github/workflows/deploy-pages.yml`：GitHub Pages 部署流程
+- `.github/workflows/deploy-pages.yml`：建置並同步 `gh-pages` 分支
 
 目前尚待替換的正式素材：
 

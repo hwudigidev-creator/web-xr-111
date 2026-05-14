@@ -38,7 +38,7 @@
 主要入口：
 
 ```text
-index.html
+src/index.html
 src/main.ts
 src/ui/WebArApp.ts
 src/ar/MindArSession.ts
@@ -62,7 +62,7 @@ npm run build
 部署：
 
 - GitHub repo：`https://github.com/hwudigidev-creator/web-xr-111`
-- 部署方式：GitHub Actions 建置後發布 GitHub Pages
+- 部署方式：根目錄保留可直接服務的靜態 build；GitHub Actions 另同步 `gh-pages` 分支
 - Workflow：`.github/workflows/deploy-pages.yml`
 - 觸發方式：push 到 `main` 或手動執行 workflow
 
