@@ -273,6 +273,7 @@ WEBAR_README.md
 - `src/ui/WebArApp.ts`：掃描 / 預覽介面與互動狀態
 - `src/ui/FallbackPreview.ts`：fallback 內容預覽
 - `src/ar/MindArSession.ts`：MindAR + Three.js 掃描工作階段
+- `src/vendor/mindar/*`：MindAR Three ESM runtime，隨 Vite build 一起打包，避免手機瀏覽器以傳統 script 載入 module 後缺少 `MindARThree`
 - `src/config/exhibits.ts`：展區 target 與素材設定
 - `src/types/exhibit.ts`：展區資料型別
 - `public/assets/images/*.svg`：demo 佔位圖

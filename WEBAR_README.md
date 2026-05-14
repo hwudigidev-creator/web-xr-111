@@ -30,6 +30,7 @@
 
 - Vite + TypeScript 靜態網站
 - MindAR + Three.js 掃描流程封裝
+- MindAR Three runtime 以 ESM 形式放在 `src/vendor/mindar/`，由 Vite 打包，避免手機瀏覽器把 CDN module 當傳統 script 載入失敗
 - `model-viewer` fallback 預覽
 - 展區 target / 素材設定檔
 - 手機優先的掃描與預覽介面
@@ -222,5 +223,6 @@ public/targets/demo-video.mind
 - iOS 請用 Safari，Android 請用 Chrome
 - `public/targets/*.mind` 必須實際存在，不可只有 README
 - `src/config/exhibits.ts` 的 `target` 路徑必須對到已上傳的 `.mind`
+- 若出現 `IMAGE.MindARThree is unavailable`，代表 runtime 載入方式或打包版本有問題，需確認 `src/vendor/mindar/` 已被建置進最新 GitHub Pages 產物
 
 目前已使用 `public/targets/source/Target.png` 編譯出 `public/targets/demo-image.mind`，手機預設掃描展區 A 圖像。

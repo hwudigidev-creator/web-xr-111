@@ -1,7 +1,5 @@
 import type { Camera, Group, Scene, WebGLRenderer } from 'three';
 
-const MINDAR_SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js';
-
 export interface MindArAnchor {
   group: Group;
   onTargetFound?: () => void;
@@ -33,6 +31,10 @@ interface MindARImageRuntime {
   MindARThree: MindARThreeConstructor;
 }
 
+interface MindARImageModule {
+  MindARThree?: MindARThreeConstructor;
+}
+
 declare global {
   interface Window {
     MINDAR?: {
@@ -51,29 +53,28 @@ export async function loadMindArImageRuntime(): Promise<MindARImageRuntime> {
   }
 
   if (!loadPromise) {
-    loadPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = MINDAR_SCRIPT_URL;
-      script.async = true;
-      script.crossOrigin = 'anonymous';
-
-      script.addEventListener('load', () => {
+    loadPromise = import('../vendor/mindar/mindar-image-three.prod.js')
+      .then((module: MindARImageModule) => {
         const loadedRuntime = window.MINDAR?.IMAGE;
+        const MindARThree = module.MindARThree ?? loadedRuntime?.MindARThree;
 
-        if (loadedRuntime?.MindARThree) {
-          resolve(loadedRuntime);
-          return;
+        if (!MindARThree) {
+          throw new Error('MindAR runtime loaded, but IMAGE.MindARThree is unavailable.');
         }
 
-        reject(new Error('MindAR runtime loaded, but IMAGE.MindARThree is unavailable.'));
-      });
+        window.MINDAR ??= {};
+        window.MINDAR.IMAGE = {
+          ...loadedRuntime,
+          MindARThree
+        };
 
-      script.addEventListener('error', () => {
-        reject(new Error(`Unable to load MindAR runtime: ${MINDAR_SCRIPT_URL}`));
+        return window.MINDAR.IMAGE;
+      })
+      .catch((error: unknown) => {
+        loadPromise = undefined;
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`Unable to load MindAR runtime: ${message}`);
       });
-
-      document.head.append(script);
-    });
   }
 
   return loadPromise;
