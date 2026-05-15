@@ -108,6 +108,15 @@ export class WebArApp {
       <main class="debug-scanner" data-stage-state="${this.stageState}">
         <div class="debug-ar-stage" data-ar-stage></div>
         <div class="glitch-layer" aria-hidden="true"></div>
+        <div class="debug-reticle" aria-hidden="true">
+          <div class="debug-reticle-frame">
+            <span class="debug-reticle-corner"></span>
+            <span class="debug-reticle-corner"></span>
+            <span class="debug-reticle-corner"></span>
+            <span class="debug-reticle-corner"></span>
+            <div class="debug-reticle-scanline"></div>
+          </div>
+        </div>
         <span class="debug-scanner-logo" aria-hidden="true">
           <img src="./icons/ERROR.png" alt="" />
         </span>

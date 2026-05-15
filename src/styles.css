@@ -678,6 +678,103 @@ body {
   mix-blend-mode: screen;
 }
 
+.debug-reticle {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.debug-scanner[data-stage-state="scanning"] .debug-reticle,
+.debug-scanner[data-stage-state="lost"] .debug-reticle {
+  opacity: 1;
+}
+
+.debug-reticle-frame {
+  position: relative;
+  width: min(70vw, 70dvh);
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.debug-reticle-corner {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border: 0 solid rgb(255 255 255 / 78%);
+  filter: drop-shadow(0 0 4px rgb(255 23 77 / 70%));
+}
+
+.debug-reticle-corner:nth-child(1) {
+  top: 0;
+  left: 0;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+
+.debug-reticle-corner:nth-child(2) {
+  top: 0;
+  right: 0;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+
+.debug-reticle-corner:nth-child(3) {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+
+.debug-reticle-corner:nth-child(4) {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+
+.debug-reticle-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow:
+    0 0 4px rgb(255 255 255 / 80%),
+    0 0 10px rgb(255 23 77 / 70%);
+  animation: reticle-scan 2s linear infinite;
+}
+
+.debug-reticle-scanline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 72px;
+  background: linear-gradient(
+    to top,
+    rgb(255 255 255 / 45%) 0%,
+    rgb(255 23 77 / 18%) 35%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+@keyframes reticle-scan {
+  from {
+    top: -1px;
+  }
+
+  to {
+    top: 100%;
+  }
+}
+
 .glitch-layer::before,
 .glitch-layer::after {
   content: "";

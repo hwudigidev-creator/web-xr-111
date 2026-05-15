@@ -234,6 +234,8 @@ public/targets/demo-video.mind
 掃描畫面右上角提供單一「錯誤回報 ▶」按鈕（CSS 繪製三角形，跨字型穩定），左上角同排顯示半透明 ERROR LOGO（70% 不透明、不接收觸控）。按下後優先呼叫 `navigator.share({ files })` 開啟系統分享單，使用者在分享單可選「儲存到照片 / Save to Photos」把 PNG 直接寫入 iOS / Android 相簿、或直接傳給負責人；不支援 Web Share 的裝置會自動退回瀏覽器下載。
 
 MindAR 預設會在 `<body>` 注入 `.mindar-ui-overlay`（loading / scanning / error，z-index 2、預設接收 pointer），加上 `.glitch-layer` 的 `mix-blend-mode` 會把 `.debug-scanner` 升成 stacking context，導致 MindAR overlay 從外部看蓋住整個掃描 UI、按鈕無法點擊。`MindArSession` 建構時已關閉這三個 overlay（`uiLoading/uiScanning/uiError: 'no'`），並對 `.debug-scanner` 設定 `z-index: 100` 與 `isolation: isolate` 做雙保險。
+
+掃描框改由 `.debug-reticle` 自繪（四角邊框 + 1px 中央掃描線 + 紅白漸層殘影拖尾），`pointer-events: none` 不擋按鈕、`z-index: 12` 排在故障層上方按鈕下方。顯示邏輯：`data-stage-state` 為 `scanning` 或 `lost` 時透出（opacity 1），`found / loading / error` 收掉，所以掃過 target 後再離開、或按過錯誤回報後返回，掃描框會自動再出現。
 截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。
 追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。首頁等待畫面中央放置 ERROR LOGO，下方為細體標語「開始進行除錯...」，LOGO 與標語皆套用偶發性故障視覺：RGB 錯位、水平撕裂與色碼雜訊會以低頻率錯開出現；掃描畫面另有較輕的故障風格 overlay，讓現場視覺更貼近主題。
 
