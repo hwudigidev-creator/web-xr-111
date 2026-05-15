@@ -256,7 +256,7 @@ export class WebArApp {
         await navigator.share({
           files: [file],
           title: '錯誤回報',
-          text: '> ERROR 回報'
+          text: '> ERROR 回報到社群'
         });
         this.setStageCopy('scanning', '請選「儲存到照片」或傳送', '完成後可繼續掃描。');
         return;
