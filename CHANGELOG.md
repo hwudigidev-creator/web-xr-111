@@ -7,6 +7,29 @@
 
 ---
 
+## [v0.2.0-20260515a] - 2026-05-15
+
+UI / UX 主要里程碑：首頁加入 ERROR LOGO、掃描頁簡化為單一錯誤回報按鈕、修復多個關鍵互動 bug。
+
+### Added
+- 首頁中央顯示 ERROR LOGO（`clamp(280px, 72vw, 520px)`），下方為細體標語「開始進行除錯...」；LOGO 與標語各自獨立計時的故障動畫（質數倍週期，抖動不同框）
+- 掃描頁左上角同排顯示 70% 透明 ERROR LOGO（`pointer-events: none`，不接收觸控）
+- 「錯誤回報 ▶」按鈕觸發 `navigator.share({ files })`，使用者可在系統分享單選「儲存到照片 / Save to Photos」直寫入 iOS / Android 相簿，或直接傳送給負責人
+
+### Changed
+- 截圖與分享兩顆按鈕合併為單一「錯誤回報 ▶」紅字按鈕（`#ff174d`）；箭頭以 CSS border 三角形繪製（跨字型穩定）、0.6s 紅白硬切閃爍
+- 分享單 title 為「錯誤回報」、text 為 `> ERROR 回報`
+- `APP_VERSION` 升至 `v0.2.0-20260515a`，service worker `CACHE_NAME` 升至 `error-ar-v5`
+
+### Fixed
+- 掃描頁按鈕第一次點擊後無法再點擊。根因：MindAR 預設會把 `.mindar-ui-overlay`（loading / scanning / error）append 到 `<body>`、`z-index: 2`、預設接收 pointer；而 `.glitch-layer` 的 `mix-blend-mode: screen` 靜默地把 `.debug-scanner` 升成 stacking context，導致按鈕 `z-index: 25` 只在內部有效，從外部看 debug-scanner 是 z=auto 的單一層、被 MindAR scanning mask 整片蓋住。修法：建構 MindARThree 時關閉那三個 overlay（`uiLoading/uiScanning/uiError: 'no'`），並對 `.debug-scanner` 設定 `z-index: 100 + isolation: isolate` 做雙保險
+- target 重新偵測後模型不再出現。根因：`onLost: 'hide'` 把 `item.object.visible = false`，但 `handleTargetFound` 只重設外層 `contentGroup.visible`，內層 mesh 仍是隱藏。修法：`handleTargetFound` 開頭補回 `item.object.visible = true`
+- 截圖按鈕原本只產生 blob 沒觸發實際下載；新流程確保 share 或 download 必有其一輸出
+- iOS Safari 在分享單關閉後留下按鈕焦點，導致下次點擊被吃。修法：點擊當下 `event.currentTarget.blur()` + share 的 `finally` 區塊再清一次 `document.activeElement`
+- LinTea 模型放大後 `recenter offset` 沒跟著 `fitScale` 縮放，導致模型被推出視野（v0.1.0-20260515e 已修，本版同步保留）
+
+---
+
 ## [v0.1.0-20260515f] - 2026-05-15
 
 ### Fixed
