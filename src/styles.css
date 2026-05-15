@@ -776,9 +776,9 @@ body {
   gap: 10px;
   min-height: 40px;
   padding: 0 14px;
-  border: 1px solid rgb(255 255 255 / 18%);
+  border: 1px solid rgb(255 23 77 / 56%);
   border-radius: 0;
-  color: #ffffff;
+  color: #ff174d;
   background: rgb(0 0 0 / 62%);
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -787,6 +787,7 @@ body {
 }
 
 .debug-action-button:active {
+  color: #ffffff;
   background: rgb(255 23 77 / 78%);
 }
 
