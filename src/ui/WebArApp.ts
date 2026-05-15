@@ -108,6 +108,9 @@ export class WebArApp {
       <main class="debug-scanner" data-stage-state="${this.stageState}">
         <div class="debug-ar-stage" data-ar-stage></div>
         <div class="glitch-layer" aria-hidden="true"></div>
+        <span class="debug-scanner-logo" aria-hidden="true">
+          <img src="./icons/ERROR.png" alt="" />
+        </span>
         <div class="debug-actions" aria-label="capture tools">
           <button class="debug-action-button" type="button" data-capture>截圖</button>
           <button class="debug-action-button" type="button" data-share>分享</button>
@@ -120,11 +123,13 @@ export class WebArApp {
       </main>
     `;
 
-    this.root.querySelector<HTMLButtonElement>('[data-capture]')?.addEventListener('click', () => {
+    this.root.querySelector<HTMLButtonElement>('[data-capture]')?.addEventListener('click', (event) => {
+      (event.currentTarget as HTMLElement).blur();
       void this.captureStage();
     });
 
-    this.root.querySelector<HTMLButtonElement>('[data-share]')?.addEventListener('click', () => {
+    this.root.querySelector<HTMLButtonElement>('[data-share]')?.addEventListener('click', (event) => {
+      (event.currentTarget as HTMLElement).blur();
       void this.shareStage();
     });
   }
@@ -274,6 +279,11 @@ export class WebArApp {
           return;
         }
         // 其它錯誤 → 退回下載
+      } finally {
+        // iOS Safari 在 share sheet 關閉後可能留下按鈕焦點，導致下一次點擊被吃掉
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
       }
     }
 

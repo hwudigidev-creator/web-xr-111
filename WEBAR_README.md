@@ -231,7 +231,7 @@ public/targets/demo-video.mind
 展區 A 目前綁定 `public/assets/models/LinTeaBuilding.glb`，掃描目前這包 `.mind` 的 marker 0 會顯示正式模型。
 模型會以 target 圖面中心為底部對齊點，依 `width` / `height` 自動縮放到圖像範圍內，並沿著 target 圖面法線向上顯示。
 
-掃描畫面右下角提供「截圖」與「分享」按鈕（觸控目標 52px 高、避開螢幕邊緣手勢區）。兩顆按鈕都優先呼叫 `navigator.share({ files })` 開啟系統分享單，使用者在分享單可選「儲存到照片 / Save to Photos」把 PNG 直接寫入 iOS / Android 相簿；不支援 Web Share 的裝置會自動退回瀏覽器下載。
+掃描畫面右上角提供「截圖」與「分享」按鈕，左上角同排顯示半透明 ERROR LOGO（70% 不透明、不接收觸控）。兩顆按鈕都優先呼叫 `navigator.share({ files })` 開啟系統分享單，使用者在分享單可選「儲存到照片 / Save to Photos」把 PNG 直接寫入 iOS / Android 相簿；不支援 Web Share 的裝置會自動退回瀏覽器下載。點擊當下會主動 `blur()` 按鈕、share sheet 關閉後再清一次焦點，避免 iOS Safari 留下按鈕焦點導致下一次點擊被吃掉。
 截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。
 追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。首頁等待畫面中央放置 ERROR LOGO，下方為細體標語「開始進行除錯...」，LOGO 與標語皆套用偶發性故障視覺：RGB 錯位、水平撕裂與色碼雜訊會以低頻率錯開出現；掃描畫面另有較輕的故障風格 overlay，讓現場視覺更貼近主題。
 
