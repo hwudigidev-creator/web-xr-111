@@ -291,6 +291,10 @@ export class MindArSession {
   }
 
   private handleTargetFound(item: ContentItem): void {
+    // onLost === 'hide' 會把 object.visible 設成 false，這裡要回填，
+    // 否則再次掃到 target 時 contentGroup 雖然 visible，但內層 mesh 仍是隱藏。
+    item.object.visible = true;
+
     if (item.exhibit.type === 'video' && item.exhibit.autoplay && item.videoElement) {
       void item.videoElement.play();
     }
