@@ -7,6 +7,16 @@
 
 ---
 
+## [v0.1.0-20260515f] - 2026-05-15
+
+### Fixed
+- 模型載入完成後 GLTFLoader 拋 `Cannot read properties of undefined (reading 'extensions')`。原因：新版 GLB 的 `meshes[370]` 與 `meshes[371]`（名為 `__safeglb_temp_1F 石柱4`、`__safeglb_temp_石柱1`）的 primitive 引用了 `material: 57`，但 `materials` 陣列只有 0..56（共 57 個），導致存取 `materials[57].extensions` 時讀到 undefined。已 patch GLB 將該兩處 material 索引改為 56（`石柱1.001`，名稱最接近的同類材質）。
+
+### Known Issues
+- 上述 patch 是繞過匯出工具的 bug（mesh 名稱前綴 `__safeglb_temp_` 暗示某個 GLB 後處理工具索引算錯）。下次匯出建議檢查／更新該工具，或在 Blender 端把孤立的石柱 mesh 合併到正式 material slot。
+
+---
+
 ## [v0.1.0-20260515e] - 2026-05-15
 
 ### Fixed
