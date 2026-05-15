@@ -797,7 +797,20 @@ body {
   height: 0;
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
-  border-left: 9px solid currentColor;
+  border-left: 9px solid #ff174d;
+  animation: report-arrow-blink 0.6s steps(1, end) infinite;
+}
+
+@keyframes report-arrow-blink {
+  0%,
+  50% {
+    border-left-color: #ff174d;
+  }
+
+  51%,
+  100% {
+    border-left-color: #ffffff;
+  }
 }
 
 .debug-scanner-logo {
