@@ -138,7 +138,7 @@ src/
 ## 使用流程
 
 1. 使用者掃 QR Code 進入網站
-2. 開場畫面顯示展場主題標語「開始進行除錯...」，並套用偶發性故障視覺：RGB 錯位、水平撕裂與色碼雜訊會錯開出現
+2. 開場畫面中央顯示 ERROR LOGO，下方為細體標語「開始進行除錯...」，並套用偶發性故障視覺：RGB 錯位、水平撕裂與色碼雜訊會錯開出現，LOGO 與標語皆套用相同故障效果
 3. 使用者點擊標語
 4. 瀏覽器直接請求相機權限
 5. 對準展場圖標
@@ -233,7 +233,7 @@ public/targets/demo-video.mind
 
 掃描畫面提供「截圖」與「分享」按鈕。支援 Web Share 的手機會開啟原生分享，不支援時會下載 PNG 截圖。
 截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。
-追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。首頁等待畫面使用偶發性故障視覺，RGB 錯位、水平撕裂與色碼雜訊會以低頻率錯開出現；掃描畫面另有較輕的故障風格 overlay，讓現場視覺更貼近「開始進行除錯...」主題。
+追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。首頁等待畫面中央放置 ERROR LOGO，下方為細體標語「開始進行除錯...」，LOGO 與標語皆套用偶發性故障視覺：RGB 錯位、水平撕裂與色碼雜訊會以低頻率錯開出現；掃描畫面另有較輕的故障風格 overlay，讓現場視覺更貼近主題。
 
 目前 marker 0 對應正式模型 `assets/models/LinTeaBuilding.glb`。模型已壓縮到約 7.9MB，並同步放在 `public/assets/models/` 與根目錄輸出用的 `assets/models/`。
 此模型使用 `KHR_draco_mesh_compression`，專案已在 `public/draco/` 放入 three.js Draco decoder。`draco_wasm_wrapper.js` 會讀取 `draco_decoder_gltf.wasm`，所以需同時部署該檔，`GLTFLoader` 載入模型時會自動使用。

@@ -83,7 +83,12 @@ export class WebArApp {
         </div>
         ${showInstallButton ? '<button class="pwa-install-button" type="button" data-install-pwa>安裝 ERROR</button>' : ''}
         <button class="debug-start-button" type="button" data-debug-start>
-          <strong data-text="開始進行除錯...">開始進行除錯...</strong>
+          <span class="debug-start-stack">
+            <span class="debug-start-logo" aria-hidden="true">
+              <img src="./icons/ERROR.png" alt="" />
+            </span>
+            <strong data-text="開始進行除錯...">開始進行除錯...</strong>
+          </span>
         </button>
         <div class="debug-version" aria-label="build version">${APP_VERSION}</div>
       </main>
