@@ -237,7 +237,7 @@ MindAR 預設會在 `<body>` 注入 `.mindar-ui-overlay`（loading / scanning / 
 
 掃描框改由 `.debug-reticle` 自繪（四角邊框 + 1px 中央掃描線 + 紅白漸層殘影拖尾），`pointer-events: none` 不擋按鈕、`z-index: 12` 排在故障層上方按鈕下方。顯示邏輯：`data-stage-state` 為 `scanning` 或 `lost` 時透出（opacity 1），`found / loading / error` 收掉，所以掃過 target 後再離開、或按過錯誤回報後返回，掃描框會自動再出現。
 截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。
-追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。首頁滿版底圖為 `public/icons/CHAR.png`（70% 不透明、`z-index: -1` 落在 `.debug-start` 的 isolated stacking context 內，僅高於純黑背景、在所有故障層與 LOGO/標題之下），會在原地以 9 秒週期緩慢飄動；中央放置 ERROR LOGO，下方為細體標語「開始進行除錯...」，LOGO 與標語皆套用偶發性故障視覺：RGB 錯位、水平撕裂與色碼雜訊會以低頻率錯開出現；掃描畫面另有較輕的故障風格 overlay，讓現場視覺更貼近主題。
+追蹤濾波已調成較即時的除錯模式，降低模型跟隨 target 時的延遲。首頁滿版底圖為 `public/icons/CHAR.png`（70% 不透明、`z-index: -1` 落在 `.debug-start` 的 isolated stacking context 內，僅高於純黑背景、在所有故障層與 LOGO/標題之下）。進場順序：CHAR 先以 `scale(3) translateY(100vh)` 全透起始（讓 3x 圖的上 1/3 落在畫面中央），第 0.07~0.14 秒間突然閃現一次（opacity 0 → 0.92 → 0）再續黑，1.8 秒結束時縮回原尺寸並淡入到 70%；CHAR 落定後標題、LOGO、版本號、PWA 安裝鈕、雜訊文字才以 0.6 秒延遲 1.6 秒淡入。之後 CHAR 進入 9 秒週期緩慢飄動，LOGO 與標語套用偶發性故障視覺：RGB 錯位、水平撕裂與色碼雜訊會以低頻率錯開出現；掃描畫面另有較輕的故障風格 overlay，讓現場視覺更貼近主題。
 
 目前 marker 0 對應正式模型 `assets/models/LinTeaBuilding.glb`。模型已壓縮到約 7.9MB，並同步放在 `public/assets/models/` 與根目錄輸出用的 `assets/models/`。
 此模型使用 `KHR_draco_mesh_compression`，專案已在 `public/draco/` 放入 three.js Draco decoder。`draco_wasm_wrapper.js` 會讀取 `draco_decoder_gltf.wasm`，所以需同時部署該檔，`GLTFLoader` 載入模型時會自動使用。

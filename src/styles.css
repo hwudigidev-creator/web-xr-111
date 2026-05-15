@@ -71,29 +71,88 @@ body {
   width: 108%;
   height: 108%;
   object-fit: cover;
-  opacity: 0.7;
+  opacity: 0;
+  transform: translate3d(0, 100vh, 0) scale(3);
+  transform-origin: center center;
   z-index: -1;
   pointer-events: none;
   user-select: none;
-  animation: start-char-float 9s ease-in-out infinite;
+  animation:
+    start-char-intro 1.8s ease-out forwards,
+    start-char-float 9s ease-in-out 1.8s infinite;
+}
+
+@keyframes start-char-intro {
+  /* 起點：放大 3 倍、垂直下移 1 個 viewport，讓 3x 圖的上 1/3 對到畫面中間 */
+  0% {
+    transform: translate3d(0, 100vh, 0) scale(3);
+    opacity: 0;
+  }
+
+  /* 短暫閃一下（約 0.07s ~ 0.14s）後立刻消失 */
+  4% {
+    transform: translate3d(0, 100vh, 0) scale(3);
+    opacity: 0;
+  }
+
+  5% {
+    transform: translate3d(0, 100vh, 0) scale(3);
+    opacity: 0.92;
+  }
+
+  8% {
+    transform: translate3d(0, 100vh, 0) scale(3);
+    opacity: 0;
+  }
+
+  /* 閃完續黑一段才開始縮回 */
+  25% {
+    transform: translate3d(0, 100vh, 0) scale(3);
+    opacity: 0;
+  }
+
+  /* 縮回滿版原尺寸、淡入到 70% 透 */
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.7;
+  }
 }
 
 @keyframes start-char-float {
   0%,
   100% {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 
   25% {
-    transform: translate3d(-1.2%, -0.8%, 0);
+    transform: translate3d(-1.2%, -0.8%, 0) scale(1);
   }
 
   50% {
-    transform: translate3d(0.9%, 1.3%, 0);
+    transform: translate3d(0.9%, 1.3%, 0) scale(1);
   }
 
   75% {
-    transform: translate3d(1.4%, -0.6%, 0);
+    transform: translate3d(1.4%, -0.6%, 0) scale(1);
+  }
+}
+
+/* CHAR 進場動畫結束（約 1.8s）後，標題、LOGO、版本號、PWA 安裝鈕、雜訊文字才淡入 */
+.debug-start > .start-corruption,
+.debug-start > .pwa-install-button,
+.debug-start > .debug-start-button,
+.debug-start > .debug-version {
+  opacity: 0;
+  animation: start-content-fade-in 0.6s ease-out 1.6s forwards;
+}
+
+@keyframes start-content-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 
