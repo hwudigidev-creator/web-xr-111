@@ -231,7 +231,7 @@ public/targets/demo-video.mind
 展區 A 目前綁定 `public/assets/models/LinTeaBuilding.glb`，掃描目前這包 `.mind` 的 marker 0 會顯示正式模型。
 模型會以 target 圖面中心為底部對齊點，依 `width` / `height` 自動縮放到圖像範圍內，並沿著 target 圖面法線向上顯示。
 
-掃描畫面右上角提供「截圖」與「分享」按鈕，左上角同排顯示半透明 ERROR LOGO（70% 不透明、不接收觸控）。兩顆按鈕都優先呼叫 `navigator.share({ files })` 開啟系統分享單，使用者在分享單可選「儲存到照片 / Save to Photos」把 PNG 直接寫入 iOS / Android 相簿；不支援 Web Share 的裝置會自動退回瀏覽器下載。
+掃描畫面右上角提供單一「錯誤回報 ▶」按鈕（CSS 繪製三角形，跨字型穩定），左上角同排顯示半透明 ERROR LOGO（70% 不透明、不接收觸控）。按下後優先呼叫 `navigator.share({ files })` 開啟系統分享單，使用者在分享單可選「儲存到照片 / Save to Photos」把 PNG 直接寫入 iOS / Android 相簿、或直接傳給負責人；不支援 Web Share 的裝置會自動退回瀏覽器下載。
 
 MindAR 預設會在 `<body>` 注入 `.mindar-ui-overlay`（loading / scanning / error，z-index 2、預設接收 pointer），加上 `.glitch-layer` 的 `mix-blend-mode` 會把 `.debug-scanner` 升成 stacking context，導致 MindAR overlay 從外部看蓋住整個掃描 UI、按鈕無法點擊。`MindArSession` 建構時已關閉這三個 overlay（`uiLoading/uiScanning/uiError: 'no'`），並對 `.debug-scanner` 設定 `z-index: 100` 與 `isolation: isolate` 做雙保險。
 截圖合成會先畫相機背景，再疊上 AR WebGL canvas；MindAR renderer 已開啟 `preserveDrawingBuffer`，避免截圖缺少模型。

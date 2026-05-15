@@ -112,8 +112,10 @@ export class WebArApp {
           <img src="./icons/ERROR.png" alt="" />
         </span>
         <div class="debug-actions" aria-label="capture tools">
-          <button class="debug-action-button" type="button" data-capture>截圖</button>
-          <button class="debug-action-button" type="button" data-share>分享</button>
+          <button class="debug-action-button" type="button" data-report>
+            <span class="debug-action-label">錯誤回報</span>
+            <span class="debug-action-arrow" aria-hidden="true"></span>
+          </button>
         </div>
         <div class="debug-status" aria-live="polite">
           <strong data-stage-title>${escapeHtml(this.stageCopy.title)}</strong>
@@ -123,14 +125,9 @@ export class WebArApp {
       </main>
     `;
 
-    this.root.querySelector<HTMLButtonElement>('[data-capture]')?.addEventListener('click', (event) => {
+    this.root.querySelector<HTMLButtonElement>('[data-report]')?.addEventListener('click', (event) => {
       (event.currentTarget as HTMLElement).blur();
-      void this.captureStage();
-    });
-
-    this.root.querySelector<HTMLButtonElement>('[data-share]')?.addEventListener('click', (event) => {
-      (event.currentTarget as HTMLElement).blur();
-      void this.shareStage();
+      void this.reportError();
     });
   }
 
@@ -238,44 +235,34 @@ export class WebArApp {
     return window.matchMedia('(display-mode: standalone)').matches || (navigator as NavigatorWithStandalone).standalone === true;
   }
 
-  private async captureStage(): Promise<void> {
-    this.setStageCopy('scanning', '正在建立截圖', '請稍候…');
-    try {
-      const blob = await this.renderStageBlob();
-      await this.deliverScreenshot(blob, 'save');
-    } catch (error) {
-      this.setStageCopy('error', '截圖失敗', this.formatError(error));
-    }
-  }
+  private async reportError(): Promise<void> {
+    this.setStageCopy('scanning', '正在擷取錯誤畫面', '請稍候…');
 
-  private async shareStage(): Promise<void> {
-    this.setStageCopy('scanning', '正在建立截圖', '請稍候…');
+    let blob: Blob;
     try {
-      const blob = await this.renderStageBlob();
-      await this.deliverScreenshot(blob, 'share');
+      blob = await this.renderStageBlob();
     } catch (error) {
-      this.setStageCopy('error', '分享失敗', this.formatError(error));
+      this.setStageCopy('error', '擷取失敗', this.formatError(error));
+      return;
     }
-  }
 
-  private async deliverScreenshot(blob: Blob, intent: 'save' | 'share'): Promise<void> {
-    const filename = `webar-${Date.now()}.png`;
+    const filename = `error-report-${Date.now()}.png`;
     const file = new File([blob], filename, { type: 'image/png' });
     const canUseShare = typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] });
 
-    // 系統分享單是行動裝置存到相簿（iOS Photos / Android Gallery）的唯一路徑，
-    // 兩個按鈕都優先走 share sheet。失敗才退回下載。
+    // 系統分享單是行動裝置存到相簿（iOS Photos / Android Gallery）的唯一路徑。
     if (canUseShare) {
       try {
         await navigator.share({
           files: [file],
-          title: intent === 'share' ? 'WebAR 截圖' : '保存截圖'
+          title: '錯誤回報',
+          text: '展場 WebAR 錯誤截圖'
         });
-        this.setStageCopy('scanning', intent === 'share' ? '分享單已開啟' : '請選「儲存到照片」', '完成後可繼續掃描。');
+        this.setStageCopy('scanning', '請選「儲存到照片」或傳送', '完成後可繼續掃描。');
         return;
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
-          this.setStageCopy('scanning', '已取消', '截圖未保存。');
+          this.setStageCopy('scanning', '已取消回報', '截圖未保存。');
           return;
         }
         // 其它錯誤 → 退回下載
@@ -296,7 +283,7 @@ export class WebArApp {
     link.remove();
     // iOS Safari 需要保留 URL 一段時間才能完成下載
     window.setTimeout(() => URL.revokeObjectURL(url), 4000);
-    this.setStageCopy('scanning', '截圖已下載', '請至瀏覽器下載清單查看。');
+    this.setStageCopy('scanning', '錯誤截圖已下載', '請至瀏覽器下載清單查看。');
   }
 
   private async renderStageBlob(): Promise<Blob> {

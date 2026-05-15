@@ -303,7 +303,7 @@ WEBAR_README.md
 - `src/config/exhibits.ts` 以 `markerIndex` 區分掃到的 target
 - 掃描介面不顯示清單，系統依 MindAR anchor found 事件自動顯示對應素材
 - 3D 模型以 target 圖面中心為底部對齊點，依 target `width` / `height` 自動縮放到圖像範圍內
-- 掃描畫面提供截圖與分享功能
+- 掃描畫面右上角僅提供單一「錯誤回報 ▶」按鈕，行為等同截圖+分享（優先呼叫 `navigator.share({ files })`，不支援則退回下載）；按鈕箭頭以 CSS 三角形繪製，避免跨字型表現不一致
 - 截圖合成順序為相機 video 背景在下、AR canvas 在上，並保留 WebGL drawing buffer 以避免模型缺失
 - 首頁等待畫面使用低頻、偶發、錯開的故障視覺，掃描畫面使用較輕的故障風格 overlay，並將 MindAR 追蹤濾波調為較即時的除錯模式
 - 3D 模型使用 ACES tone mapping、固定補光與 `RoomEnvironment` 環境反射
