@@ -32,7 +32,6 @@ export class WebArApp {
   private isRunning = false;
   private isPwaInstallable = false;
   private pwaInstallPrompt?: BeforeInstallPromptEvent;
-  private lastCaptureUrl?: string;
   private stageState: StageState = 'idle';
   private stageCopy: StageCopy = {
     title: '開始進行除錯...',
@@ -234,38 +233,60 @@ export class WebArApp {
     return window.matchMedia('(display-mode: standalone)').matches || (navigator as NavigatorWithStandalone).standalone === true;
   }
 
-  private async captureStage(): Promise<Blob> {
-    const blob = await this.renderStageBlob();
-
-    if (this.lastCaptureUrl) {
-      URL.revokeObjectURL(this.lastCaptureUrl);
+  private async captureStage(): Promise<void> {
+    this.setStageCopy('scanning', '正在建立截圖', '請稍候…');
+    try {
+      const blob = await this.renderStageBlob();
+      await this.deliverScreenshot(blob, 'save');
+    } catch (error) {
+      this.setStageCopy('error', '截圖失敗', this.formatError(error));
     }
-
-    this.lastCaptureUrl = URL.createObjectURL(blob);
-    this.setStageCopy('scanning', '截圖已建立', '可直接分享或下載。');
-    return blob;
   }
 
   private async shareStage(): Promise<void> {
-    const blob = await this.renderStageBlob();
-    const file = new File([blob], `webar-${Date.now()}.png`, {
-      type: 'image/png'
-    });
+    this.setStageCopy('scanning', '正在建立截圖', '請稍候…');
+    try {
+      const blob = await this.renderStageBlob();
+      await this.deliverScreenshot(blob, 'share');
+    } catch (error) {
+      this.setStageCopy('error', '分享失敗', this.formatError(error));
+    }
+  }
 
-    if (navigator.canShare?.({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: 'WebAR 截圖'
-      });
-      return;
+  private async deliverScreenshot(blob: Blob, intent: 'save' | 'share'): Promise<void> {
+    const filename = `webar-${Date.now()}.png`;
+    const file = new File([blob], filename, { type: 'image/png' });
+    const canUseShare = typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] });
+
+    // 系統分享單是行動裝置存到相簿（iOS Photos / Android Gallery）的唯一路徑，
+    // 兩個按鈕都優先走 share sheet。失敗才退回下載。
+    if (canUseShare) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: intent === 'share' ? 'WebAR 截圖' : '保存截圖'
+        });
+        this.setStageCopy('scanning', intent === 'share' ? '分享單已開啟' : '請選「儲存到照片」', '完成後可繼續掃描。');
+        return;
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          this.setStageCopy('scanning', '已取消', '截圖未保存。');
+          return;
+        }
+        // 其它錯誤 → 退回下載
+      }
     }
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = file.name;
+    link.download = filename;
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
+    link.remove();
+    // iOS Safari 需要保留 URL 一段時間才能完成下載
+    window.setTimeout(() => URL.revokeObjectURL(url), 4000);
+    this.setStageCopy('scanning', '截圖已下載', '請至瀏覽器下載清單查看。');
   }
 
   private async renderStageBlob(): Promise<Blob> {

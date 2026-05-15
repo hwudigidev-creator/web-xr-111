@@ -761,21 +761,35 @@ body {
 
 .debug-actions {
   position: fixed;
-  top: max(12px, env(safe-area-inset-top));
-  right: max(12px, env(safe-area-inset-right));
-  z-index: 20;
+  right: max(16px, calc(env(safe-area-inset-right) + 8px));
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 124px);
+  z-index: 25;
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .debug-action-button {
-  min-height: 40px;
-  padding: 0 14px;
-  border: 1px solid rgb(255 255 255 / 18%);
+  min-width: 88px;
+  min-height: 52px;
+  padding: 0 22px;
+  border: 1px solid rgb(255 255 255 / 28%);
   border-radius: 0;
   color: #ffffff;
-  background: rgb(0 0 0 / 62%);
+  background: rgb(0 0 0 / 72%);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   cursor: pointer;
+  touch-action: manipulation;
+  backdrop-filter: blur(6px);
+  text-shadow:
+    1px 0 #ff174d,
+    -1px 0 #00f5ff;
+}
+
+.debug-action-button:active {
+  background: rgb(255 23 77 / 78%);
 }
 
 .debug-status {
