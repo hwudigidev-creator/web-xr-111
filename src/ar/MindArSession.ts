@@ -56,7 +56,14 @@ export class MindArSession {
       imageTargetSrc: resolvePublicPath(this.exhibits[0].target),
       maxTrack: this.exhibits.length,
       filterMinCF: 0.08,
-      filterBeta: 8
+      filterBeta: 8,
+      // 關掉 MindAR 自帶的 loading / scanning / error overlay。
+      // 它們會 append 到 <body>、z-index 2 且預設接收 pointer，
+      // 因為 .debug-scanner 被 mix-blend-mode 升成 stacking context，
+      // 從外面看 z-index 25 的按鈕反而被這層 z=2 的 overlay 蓋住按不到。
+      uiLoading: 'no',
+      uiScanning: 'no',
+      uiError: 'no'
     });
 
     const { renderer, scene, camera } = this.mindarThree;

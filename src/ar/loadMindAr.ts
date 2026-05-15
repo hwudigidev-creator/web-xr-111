@@ -12,6 +12,9 @@ export interface MindARThreeOptions {
   maxTrack?: number;
   filterMinCF?: number;
   filterBeta?: number;
+  uiLoading?: 'yes' | 'no' | string;
+  uiScanning?: 'yes' | 'no' | string;
+  uiError?: 'yes' | 'no' | string;
 }
 
 export interface MindARThreeInstance {
