@@ -76,6 +76,7 @@ export class WebArApp {
 
     this.root.innerHTML = `
       <main class="debug-start">
+        <img class="start-char-bg" src="./icons/CHAR.png" alt="" aria-hidden="true" />
         <div class="start-corruption" aria-hidden="true">
           <span>0xE2</span><span>0x7F</span><span>SYS_ERR</span><span>RGB_SHIFT</span>
           <span>SCAN//013</span><span>MEM_FAULT</span><span>0xC0FF</span><span>FRAME_DROP</span>
