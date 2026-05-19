@@ -7,6 +7,16 @@
 
 ---
 
+## [v0.2.0-20260519a] - 2026-05-19
+
+資產更新：LinTea Building 模型重製，採用 Blender Principled BSDF + glTF 內嵌貼圖（PBR 完整）。
+
+### Changed
+- `public/assets/models/LinTeaBuilding.glb` 更新（15 MB → 42 MB），帶完整 PBR 材質與貼圖
+- `APP_VERSION` 升至 `v0.2.0-20260519a`，service worker `CACHE_NAME` 升至 `error-ar-v6`（強制刷新舊模型快取）
+
+---
+
 ## [v0.2.0-20260515a] - 2026-05-15
 
 UI / UX 主要里程碑：首頁加入 ERROR LOGO、掃描頁簡化為單一錯誤回報按鈕、修復多個關鍵互動 bug。
