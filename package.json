@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "optimize:models": "gltf-transform optimize assets/models/LinTeaBuilding.glb public/assets/models/LinTeaBuilding.glb --compress draco --texture-compress webp"
   },
   "dependencies": {
     "@google/model-viewer": "^3.5.0",
     "three": "^0.163.0"
   },
   "devDependencies": {
+    "@gltf-transform/cli": "^4.3.0",
     "@types/three": "^0.163.0",
     "typescript": "^5.4.5",
     "vite": "^5.4.11"
