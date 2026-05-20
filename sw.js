@@ -1,4 +1,4 @@
-const CACHE_NAME = 'error-ar-v6';
+const CACHE_NAME = 'error-ar-v7';
 const CORE_ASSETS = [
   './',
   './index.html',
