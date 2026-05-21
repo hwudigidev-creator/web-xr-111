@@ -7,6 +7,23 @@
 
 ---
 
+## [v0.3.0-20260521c] - 2026-05-21
+
+### Changed
+- **SET1 隨機變體改為「每次掃描」重抽**（原本是 module load 才抽一次）。
+  - `MindArSession.createContent` 重構：`assetVariants.length > 1` 時平行載入所有 variants（共用同一個 DRACOLoader），各自建好 pivot 後包進一個容器 Group、全部 `visible: false`。
+  - `handleTargetFound` 每次 target 被偵測時 `Math.random()` 挑一個 variant 顯示、其餘隱藏。
+  - 進度回報聚合：用 `Map<assetPath, {loaded,total}>` 累加各 chunk，回報「總合 loaded / 總合 total」給 UI 看單一進度條。
+  - 額外 bandwidth 成本：SET1 從進場下載 1.5 MB → 3 MB（雙模型共 3 MB）。
+- `verifyAssetFile` 配合更新：有 `assetVariants` 時逐一 HEAD 驗證，避免「主檔在但變體 404」被延後到 createContent 才爆炸。
+- 移除 exhibits.ts 內的 `pickVariant()`（module-load 隨機已不需要）；`SET1.asset` 改設為 `SET1_VARIANTS[0]` 作為 fallback / 主要顯示路徑。
+
+### Internal
+- `ContentItem` 介面新增 `variantObjects?: Object3D[]`。
+- bump `APP_VERSION` → `v0.3.0-20260521c`（同 sw `error-ar-v8` 不動，因為這次無需破 SW core_assets cache，只是模型 asset 變化已被 `?v=` 機制涵蓋）。
+
+---
+
 ## [v0.3.0-20260521b] - 2026-05-21
 
 ### Added

@@ -21,7 +21,13 @@ export interface MindArSessionCallbacks {
 
 interface ContentItem {
   exhibit: Exhibit;
+  /** 主物件；若有 variants 則是包裹它們的容器 Group。 */
   object: Object3D;
+  /**
+   * 多模型隨機變體；若存在且長度 > 1，每次 target 被偵測到時隨機顯示其中一個，
+   * 其餘隱藏。長度 ≤ 1 時等同沒有變體。
+   */
+  variantObjects?: Object3D[];
   videoElement?: HTMLVideoElement;
 }
 
@@ -243,77 +249,123 @@ export class MindArSession {
       };
     }
 
+    // 決定要載入哪些模型：
+    // - assetVariants 有 ≥2 個 → 全部都載，每次 target 被偵測時隨機切換顯示
+    // - 否則只載 exhibit.asset
+    const variants = exhibit.assetVariants && exhibit.assetVariants.length > 1
+      ? exhibit.assetVariants
+      : [exhibit.asset];
+
+    // 進度回報聚合：每張 chunk 各自 lengthComputable 但我們要呈現總和。
+    // Map 紀錄每個 asset 的 (loaded, total)，事件來時更新對應 entry 再加總。
+    const perAssetProgress = new Map<string, { loaded: number; total: number }>();
+    const reportAggregateProgress = () => {
+      let sumLoaded = 0;
+      let sumTotal = 0;
+      perAssetProgress.forEach((v) => {
+        sumLoaded += v.loaded;
+        sumTotal += v.total;
+      });
+      if (sumTotal > 0) {
+        this.callbacks.onContentProgress?.(exhibit, sumLoaded, sumTotal);
+      }
+    };
+
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath(resolvePublicPath('draco/'));
 
     const loader = new GLTFLoader();
     loader.setDRACOLoader(dracoLoader);
-    let gltf: Awaited<ReturnType<typeof loader.loadAsync>>;
 
+    let loadedScenes: Array<{ scene: import('three').Object3D }>;
     try {
-      gltf = await new Promise((resolve, reject) => {
-        loader.load(
-          resolvePublicPath(exhibit.asset),
-          (result) => resolve(result),
-          (event) => {
-            if (event.lengthComputable) {
-              this.callbacks.onContentProgress?.(exhibit, event.loaded, event.total);
-            }
-          },
-          (error) => reject(error instanceof Error ? error : new Error('模型載入失敗'))
-        );
-      });
+      loadedScenes = await Promise.all(
+        variants.map((assetPath) =>
+          new Promise<{ scene: import('three').Object3D }>((resolve, reject) => {
+            loader.load(
+              resolvePublicPath(assetPath),
+              (result) => resolve(result as { scene: import('three').Object3D }),
+              (event) => {
+                if (event.lengthComputable) {
+                  perAssetProgress.set(assetPath, { loaded: event.loaded, total: event.total });
+                  reportAggregateProgress();
+                }
+              },
+              (error) =>
+                reject(error instanceof Error ? error : new Error(`模型載入失敗：${assetPath}`))
+            );
+          })
+        )
+      );
     } finally {
       dracoLoader.dispose();
     }
 
-    const model = gltf.scene;
     const orientation = exhibit.orientation ?? 'floor';
     const offsetX = exhibit.offsetX ?? 0;
     const offsetY = exhibit.offsetY ?? 0;
     const offsetZ = exhibit.offsetZ ?? 0;
     const targetWidth = exhibit.width ?? 1;
     const targetHeight = exhibit.height ?? targetWidth;
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const footprintWidth = Math.max(size.x, 0.0001);
 
-    // fitScale 的「高度」維度，取決於 target 擺放方式：
-    // - floor：target 在地上，畫面平面對映模型的 X×Z（俯視 footprint）。
-    // - upright：target 直立掛牆，畫面平面對映模型的 X×Y（正視 silhouette）。
-    const footprintH = orientation === 'upright'
-      ? Math.max(size.y, 0.0001)
-      : Math.max(size.z, 0.0001);
-    const fitScale = Math.min(targetWidth / footprintWidth, targetHeight / footprintH) * exhibit.scale;
+    // 對單一 GLB scene 做置中 + fit + 視 orientation 套用旋轉的 helper。
+    // 為了讓 variants 共用，獨立成一個 closure。
+    const buildPivot = (model: import('three').Object3D): import('three').Group => {
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const footprintWidth = Math.max(size.x, 0.0001);
+      const footprintH = orientation === 'upright'
+        ? Math.max(size.y, 0.0001)
+        : Math.max(size.z, 0.0001);
+      const fitScale = Math.min(targetWidth / footprintWidth, targetHeight / footprintH) * exhibit.scale;
 
-    const pivot = new THREE.Group();
-    // 先縮再位移，且把位移量乘上 fitScale，否則大模型（如 LinTea）的中心偏移會把幾何推到視野外。
-    model.scale.setScalar(fitScale);
+      const pivot = new THREE.Group();
+      // 先縮再位移；位移量必須乘 fitScale，否則大模型的中心偏移會把幾何推出視野外。
+      model.scale.setScalar(fitScale);
 
-    if (orientation === 'upright') {
-      // 直立展板：Y-up 模型維持 Y-up（不旋轉），三軸都置中於 target 中心。
-      // 之後用 pivot.position.z 把模型推離牆面（給 +Z 為朝向相機方向）。
-      model.position.set(-center.x * fitScale, -center.y * fitScale, -center.z * fitScale);
-    } else {
-      // 地面 target：保持原行為，XZ 置中、底部貼地，然後 pivot 旋轉 90° 把 Y-up 模型立起來。
-      model.position.set(-center.x * fitScale, -box.min.y * fitScale, -center.z * fitScale);
-      pivot.rotation.x = Math.PI / 2;
+      if (orientation === 'upright') {
+        // 直立展板：Y-up 維持 Y-up，三軸置中。
+        model.position.set(-center.x * fitScale, -center.y * fitScale, -center.z * fitScale);
+      } else {
+        // 地面 target：XZ 置中、底部貼地，pivot 旋轉 90° 把 Y-up 立起來。
+        model.position.set(-center.x * fitScale, -box.min.y * fitScale, -center.z * fitScale);
+        pivot.rotation.x = Math.PI / 2;
+      }
+
+      pivot.position.set(offsetX, offsetY, offsetZ);
+      pivot.add(model);
+      return pivot;
+    };
+
+    const variantPivots = loadedScenes.map(({ scene }) => buildPivot(scene));
+
+    if (variantPivots.length === 1) {
+      return { exhibit, object: variantPivots[0] };
     }
 
-    pivot.position.set(offsetX, offsetY, offsetZ);
-    pivot.add(model);
+    // 多 variants：包到一個容器 Group，全部預設隱藏，handleTargetFound 隨機挑一個顯示。
+    const container = new THREE.Group();
+    variantPivots.forEach((p) => {
+      p.visible = false;
+      container.add(p);
+    });
 
-    return {
-      exhibit,
-      object: pivot
-    };
+    return { exhibit, object: container, variantObjects: variantPivots };
   }
 
   private handleTargetFound(item: ContentItem): void {
     // onLost === 'hide' 會把 object.visible 設成 false，這裡要回填，
     // 否則再次掃到 target 時 contentGroup 雖然 visible，但內層 mesh 仍是隱藏。
     item.object.visible = true;
+
+    // 隨機變體：每次 target 被偵測到隨機挑一個 variant 顯示，其餘隱藏。
+    if (item.variantObjects && item.variantObjects.length > 1) {
+      const pickIndex = Math.floor(Math.random() * item.variantObjects.length);
+      item.variantObjects.forEach((v, i) => {
+        v.visible = i === pickIndex;
+      });
+    }
 
     if (item.exhibit.type === 'video' && item.exhibit.autoplay && item.videoElement) {
       void item.videoElement.play();

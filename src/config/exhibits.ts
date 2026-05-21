@@ -1,13 +1,8 @@
 import type { Exhibit } from '../types/exhibit';
 
-/**
- * 隨機從 variants 挑一個 path。在 module 載入時呼叫一次，
- * 同一個 page session 維持一致；重新整理頁面才會重新抽。
- */
-function pickVariant(variants: string[]): string {
-  return variants[Math.floor(Math.random() * variants.length)];
-}
-
+// assetVariants 列表會在 MindArSession 內被全部載入，
+// 每次 target 被偵測到時 handleTargetFound 隨機顯示其中一個。
+// asset 欄位作為 fallback / 主要顯示名稱（給只有單一變體時用）。
 const SET1_VARIANTS = [
   'assets/models/SET1-1.glb',
   'assets/models/SET1-2.glb'
@@ -26,7 +21,7 @@ export const exhibits: Exhibit[] = [
     target: SETS_TARGET,
     markerIndex: 0,
     type: 'model',
-    asset: pickVariant(SET1_VARIANTS),
+    asset: SET1_VARIANTS[0],
     assetVariants: SET1_VARIANTS,
     preview: 'assets/images/model-placeholder.svg',
     orientation: 'upright',

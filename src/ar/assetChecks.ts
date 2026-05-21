@@ -13,12 +13,20 @@ export async function verifyTargetFile(exhibit: Exhibit): Promise<void> {
 }
 
 export async function verifyAssetFile(exhibit: Exhibit): Promise<void> {
-  const url = resolvePublicPath(exhibit.asset);
-  const response = await fetch(url, {
-    cache: 'no-store'
-  });
+  // 有 assetVariants 時把每張變體都驗一次，避免「主檔在但變體 404」的情況
+  // 拖到 createContent 才爆炸。
+  const paths = exhibit.type === 'model'
+    && exhibit.assetVariants
+    && exhibit.assetVariants.length > 0
+      ? exhibit.assetVariants
+      : [exhibit.asset];
 
-  if (!response.ok) {
-    throw new Error(`找不到素材檔：${exhibit.asset}。請先上傳對應的素材。`);
+  for (const path of paths) {
+    const url = resolvePublicPath(path);
+    const response = await fetch(url, { cache: 'no-store' });
+
+    if (!response.ok) {
+      throw new Error(`找不到素材檔：${path}。請先上傳對應的素材。`);
+    }
   }
 }
