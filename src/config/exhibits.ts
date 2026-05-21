@@ -1,6 +1,110 @@
 import type { Exhibit } from '../types/exhibit';
 
+/**
+ * 隨機從 variants 挑一個 path。在 module 載入時呼叫一次，
+ * 同一個 page session 維持一致；重新整理頁面才會重新抽。
+ */
+function pickVariant(variants: string[]): string {
+  return variants[Math.floor(Math.random() * variants.length)];
+}
+
+const SET1_VARIANTS = [
+  'assets/models/SET1-1.glb',
+  'assets/models/SET1-2.glb'
+];
+
+// SET 系列共用同一個 .mind 檔（5 個 marker，依 markerIndex 0..4 對應）。
+// 此檔案需透過 MindAR Image Compiler（https://hiukim.github.io/mind-ar-js-doc/tools/compile）
+// 將 public/targets/source/SET1.jpg..SET5.jpg 依序合併編譯，產出後放在 public/targets/sets.mind。
+const SETS_TARGET = 'targets/sets.mind';
+
 export const exhibits: Exhibit[] = [
+  {
+    id: 'set1',
+    name: 'SET 1',
+    zone: 'SET',
+    target: SETS_TARGET,
+    markerIndex: 0,
+    type: 'model',
+    asset: pickVariant(SET1_VARIANTS),
+    assetVariants: SET1_VARIANTS,
+    preview: 'assets/images/model-placeholder.svg',
+    orientation: 'upright',
+    offsetZ: 0,
+    width: 1,
+    height: 1,
+    scale: 0.9,
+    onLost: 'hide',
+    isAssetReady: true
+  },
+  {
+    id: 'set2',
+    name: 'SET 2',
+    zone: 'SET',
+    target: SETS_TARGET,
+    markerIndex: 1,
+    type: 'model',
+    asset: 'assets/models/SET2.glb',
+    preview: 'assets/images/model-placeholder.svg',
+    orientation: 'upright',
+    offsetZ: 0,
+    width: 1,
+    height: 1,
+    scale: 0.9,
+    onLost: 'hide',
+    isAssetReady: true
+  },
+  {
+    id: 'set3',
+    name: 'SET 3',
+    zone: 'SET',
+    target: SETS_TARGET,
+    markerIndex: 2,
+    type: 'model',
+    asset: 'assets/models/SET3.glb',
+    preview: 'assets/images/model-placeholder.svg',
+    orientation: 'upright',
+    offsetZ: 0,
+    width: 1,
+    height: 1,
+    scale: 0.9,
+    onLost: 'hide',
+    isAssetReady: true
+  },
+  {
+    id: 'set4',
+    name: 'SET 4',
+    zone: 'SET',
+    target: SETS_TARGET,
+    markerIndex: 3,
+    type: 'model',
+    asset: 'assets/models/SET4.glb',
+    preview: 'assets/images/model-placeholder.svg',
+    orientation: 'upright',
+    offsetZ: 0,
+    width: 1,
+    height: 1,
+    scale: 0.9,
+    onLost: 'hide',
+    isAssetReady: true
+  },
+  {
+    id: 'set5',
+    name: 'SET 5',
+    zone: 'SET',
+    target: SETS_TARGET,
+    markerIndex: 4,
+    type: 'model',
+    asset: 'assets/models/SET5.glb',
+    preview: 'assets/images/model-placeholder.svg',
+    orientation: 'upright',
+    offsetZ: 0,
+    width: 1,
+    height: 1,
+    scale: 0.9,
+    onLost: 'hide',
+    isAssetReady: true
+  },
   {
     id: 'demo-model-on-current-target',
     name: 'LinTea Building',
@@ -18,7 +122,9 @@ export const exhibits: Exhibit[] = [
     keyLightIntensity: 2.35,
     environmentIntensity: 1,
     onLost: 'hide',
-    isAssetReady: true
+    // 暫時關閉：此 exhibit 用獨立的 demo-image.mind，與 SET 系列的 sets.mind 不相容
+    // （MindArSession 要求所有 active exhibits 共用同一個 .mind 檔）。
+    isAssetReady: false
   },
   {
     id: 'demo-model',

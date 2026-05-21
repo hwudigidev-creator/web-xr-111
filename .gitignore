@@ -7,3 +7,7 @@ dist/
 # 不入 git；經 `npm run optimize:models` 壓縮後輸出到 public/assets/models/ 部署。
 assets/models/*.glb
 !assets/models/Demo.glb
+
+# Target 圖卡備份（根目錄 targets/source/）是歷史遺留位置；
+# 部署版本一律放 public/targets/source/。SET*.jpg 在根目錄當備份不入 git。
+targets/source/SET*.jpg

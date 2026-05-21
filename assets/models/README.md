@@ -14,12 +14,23 @@
 npm run optimize:models
 ```
 
-底層用 `@gltf-transform/cli optimize`：
-- 套用 Draco mesh 壓縮
-- PNG / JPEG 紋理轉 WebP
-- 同時做 dedup / instance / palette / weld / simplify / prune / sparse
+底層走 `scripts/optimize-models.mjs`：
+- 對每個 `assets/models/*.glb` 跑 `@gltf-transform/cli optimize`
+- 套用 Draco mesh 壓縮、PNG/JPEG → WebP 紋理、dedup / instance / weld / simplify / prune / sparse
+- `Demo.glb` 直接複製不壓縮（測試用小檔）
+- 輸出到對應的 `public/assets/models/*.glb`
 
-實測 LinTeaBuilding.glb 從 112 MB 壓到 3.5 MB（約 97% 縮減）。
+實測壓縮比例（2026-05-21）：
+
+| 模型 | Raw | Optimized | 壓縮率 |
+|---|---:|---:|---:|
+| SET1-1 | 21.3 MB | 1.54 MB | 93% |
+| SET1-2 | 20.6 MB | 1.49 MB | 93% |
+| SET2 | 12.7 MB | 0.68 MB | 95% |
+| SET3 | 28.4 MB | 1.89 MB | 93% |
+| SET4 | 38.9 MB | 1.11 MB | 97% |
+| SET5 | 11.9 MB | 1.68 MB | 86% |
+| LinTeaBuilding | 117.7 MB | 3.49 MB | 97% |
 
 ## 為何分兩處
 

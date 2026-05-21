@@ -7,6 +7,31 @@
 
 ---
 
+## [v0.3.0-20260521a] - 2026-05-21
+
+主要里程碑：SET 系列 5 個展板上線（含 SET1 的兩個隨機變體）。新增直立展板（upright）擺放模式。
+
+### Added
+- **SET1–SET5 五個 exhibit**（`src/config/exhibits.ts`）：全部使用同一個 `targets/sets.mind`，markerIndex 0..4 對應。模型尺度約 1.9 m 直立人形，全部 `orientation: 'upright'`、`scale: 0.9`。
+- **SET1 隨機變體**：頁面載入時從 `SET1-1.glb` / `SET1-2.glb` 抽一個顯示，同 session 維持一致，重整才會重抽。`ModelExhibit.assetVariants` 是抽選來源；最終選中的 path 落在 `asset` 欄位。
+- **新型別 `ExhibitOrientation = 'floor' | 'upright'`**（`src/types/exhibit.ts`）：
+  - `floor`（向下相容、預設）：target 平躺地面，模型套用 `pivot.rotation.x = π/2` 立起來
+  - `upright`：target 直立掛牆，Y-up 模型不旋轉、三軸置中於 target 中心
+- `ModelExhibit` 加入 `offsetX/offsetY/offsetZ`，可把模型推離 target（upright 模式特別需要往 +Z 推開展板）。
+- **`scripts/optimize-models.mjs`**：批次壓縮 `assets/models/*.glb` → `public/assets/models/*.glb`。`Demo.glb` 直接複製不壓縮。`npm run optimize:models` 入口改指到這個腳本。
+- 6 個 SET 系列 raw GLB（SET1-1 / SET1-2 / SET2 / SET3 / SET4 / SET5，共 134 MB）→ 壓縮後 8.4 MB（94% 縮減）部署到 `public/assets/models/`。
+
+### Changed
+- `MindArSession.createContent`：依 `orientation` 切換 fitScale 公式與置中策略；直立模式不旋轉、三軸置中；最後一律以 `pivot.position` 套用 `offsetX/Y/Z`。
+- `LinTea Building` 暫設 `isAssetReady: false`：它的 target 用獨立 `demo-image.mind`，與 SET 系列的 `sets.mind` 不相容（MindArSession 要求所有 active exhibits 共用同一 .mind 檔）；要恢復需把它一起合進新 `.mind` set。
+- `APP_VERSION` 升至 `v0.3.0-20260521a`，service worker `CACHE_NAME` 升至 `error-ar-v8`。
+
+### Known Issues
+- **`public/targets/sets.mind` 尚未產出**。需要把 `public/targets/source/SET1.jpg`..`SET5.jpg` 依序餵給 [MindAR Image Compiler](https://hiukim.github.io/mind-ar-js-doc/tools/compile)，下載產出後放到 `public/targets/sets.mind`。在這個檔到位之前，啟動 AR 會在「檢查素材中」階段顯示「找不到 target 檔」。
+- Compiler CLI 不存在 npm（曾嘗試 `mind-ar-js-cli` 不存在），mind-ar 自身的 `Compiler` 是 browser-only（依賴 worker + DOM canvas），node 跑不起來。目前以官方 web 工具補完。
+
+---
+
 ## [v0.2.0-20260521a] - 2026-05-21
 
 建立 raw → optimized → deploy 的模型壓縮工作流，將最新 LinTea raw（112 MB）壓到 3.5 MB 部署。
