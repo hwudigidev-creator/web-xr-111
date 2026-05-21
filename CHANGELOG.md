@@ -7,6 +7,25 @@
 
 ---
 
+## [v0.3.0-20260521d] - 2026-05-21
+
+### Added
+- **LinTea Building 重新上線**，作為 `sets.mind` 的第 6 個 marker（markerIndex 5）。
+  - `public/targets/source/Target.png` 改名為 `LinTea.png`，並合進 `sets.mind`（從 3.4 MB → 4.67 MB）。
+  - exhibits.ts 的 LinTea 條目 `target` 改指 `sets.mind`、`markerIndex: 5`、`orientation: 'floor'`（平面桌卡，保留 LinTea 原本 lighting）、`isAssetReady: true`。
+  - 與 SET1-5（直立展板，`orientation: 'upright'`）並存於同一 `.mind` 檔；MindArSession 的 `assertSingleTargetSet` 不再阻擋。
+
+### Changed
+- `scripts/compile-mind.mjs` 改用顯式 `INPUT_ORDER` 陣列定義 markerIndex 對應，取代之前的「檔名 sort 排序」。新增 target 時直接 append 到陣列尾端即可，避免插入中間打亂既有 markerIndex 對映。
+
+### Removed
+- `public/targets/demo-image.mind` — 自 v0.2.0 起再沒被任何 active exhibit 引用，刪除以省 repo size。
+
+### Internal
+- bump `APP_VERSION` → `v0.3.0-20260521d`。
+
+---
+
 ## [v0.3.0-20260521c] - 2026-05-21
 
 ### Changed

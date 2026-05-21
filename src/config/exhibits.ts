@@ -101,14 +101,17 @@ export const exhibits: Exhibit[] = [
     isAssetReady: true
   },
   {
-    id: 'demo-model-on-current-target',
+    id: 'lintea-building',
     name: 'LinTea Building',
     zone: 'A',
-    target: 'targets/demo-image.mind',
-    markerIndex: 0,
+    // 與 SET1-5 共用 sets.mind；markerIndex 5 對應 LinTea.png（compile-mind.mjs 的 INPUT_ORDER 最後一筆）。
+    target: SETS_TARGET,
+    markerIndex: 5,
     type: 'model',
     asset: 'assets/models/LinTeaBuilding.glb',
     preview: 'assets/images/model-placeholder.svg',
+    // floor orientation：LinTea 是平面桌卡 target，模型套 pivot.rotation.x = π/2 立起來。
+    orientation: 'floor',
     width: 1,
     height: 0.5625,
     scale: 0.9,
@@ -117,9 +120,7 @@ export const exhibits: Exhibit[] = [
     keyLightIntensity: 2.35,
     environmentIntensity: 1,
     onLost: 'hide',
-    // 暫時關閉：此 exhibit 用獨立的 demo-image.mind，與 SET 系列的 sets.mind 不相容
-    // （MindArSession 要求所有 active exhibits 共用同一個 .mind 檔）。
-    isAssetReady: false
+    isAssetReady: true
   },
   {
     id: 'demo-model',

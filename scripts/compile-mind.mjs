@@ -17,13 +17,22 @@ const OUT_PATH = resolve(PROJECT_ROOT, 'public/targets/sets.mind');
 const TMP_DIR = resolve(PROJECT_ROOT, 'scripts/.tmp');
 const COMPILER_URL = 'https://hiukim.github.io/mind-ar-js-doc/tools/compile';
 
-const inputs = readdirSync(SRC_DIR)
-  .filter((f) => /^SET\d+\.jpg$/i.test(f))
-  .sort()
-  .map((f) => join(SRC_DIR, f));
+// markerIndex 對應「在這個陣列裡的位置」。順序就是 markerIndex 0、1、2、...
+// 新增 target 時：把檔名加在最後（不要插中間，會打亂既有 exhibits 的 markerIndex）。
+const INPUT_ORDER = [
+  'SET1.jpg',
+  'SET2.jpg',
+  'SET3.jpg',
+  'SET4.jpg',
+  'SET5.jpg',
+  'LinTea.png'  // markerIndex 5 — LinTea Building 平面桌卡
+];
 
-if (inputs.length === 0) {
-  console.error('No SET*.jpg targets found in', SRC_DIR);
+const inputs = INPUT_ORDER.map((name) => join(SRC_DIR, name));
+const missing = inputs.filter((p) => !readdirSync(SRC_DIR).includes(p.split(/[\\/]/).pop() ?? ''));
+if (missing.length > 0) {
+  console.error('Missing target source files:');
+  missing.forEach((p) => console.error('  -', p));
   process.exit(1);
 }
 
