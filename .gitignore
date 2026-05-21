@@ -3,6 +3,10 @@ dist/
 .vite-dev*.log
 *.local
 
+# Claude / scripts 暫存
+.claude/
+scripts/.tmp/
+
 # 模型原檔（未壓縮）放在 assets/models/ 作為來源，
 # 不入 git；經 `npm run optimize:models` 壓縮後輸出到 public/assets/models/ 部署。
 assets/models/*.glb
