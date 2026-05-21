@@ -7,6 +7,20 @@
 
 ---
 
+## [v0.3.0-20260522a] - 2026-05-22
+
+### Changed
+- **SET5 從 3D 模型改為 image overlay**：顯示 `assets/images/SET5-P.png`（1024×1536，2:3 直立）。
+  - `type: 'model'` → `type: 'image'`，`asset` 改指 SET5-P.png。
+  - `width: 0.667, height: 1`：採圖片原比，置中於 SET5 target（1×1 正方），左右留 SET5 原始 target 可見區。要填滿改回 `1×1`（會被拉成正方）。
+  - 不需 `orientation` / `offset*`：image plane 預設就跟 anchor 平面對齊朝向相機，upright 與 floor target 都自然顯示。
+  - 原 `assets/models/SET5.glb` / `public/assets/models/SET5.glb` 仍保留（沒被引用，未來想切回 3D 直接改 type 即可）。
+
+### Internal
+- bump `APP_VERSION` → `v0.3.0-20260522a`（跨日重啟字母序）。
+
+---
+
 ## [v0.3.0-20260521e] - 2026-05-21
 
 ### Added

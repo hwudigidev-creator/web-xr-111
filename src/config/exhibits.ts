@@ -89,14 +89,15 @@ export const exhibits: Exhibit[] = [
     zone: 'SET',
     target: SETS_TARGET,
     markerIndex: 4,
-    type: 'model',
-    asset: 'assets/models/SET5.glb',
-    preview: 'assets/images/model-placeholder.svg',
-    orientation: 'upright',
-    offsetZ: 0,
-    width: 1,
+    // SET5 改成顯示一張圖片（SET5-P.png，1024×1536，2:3 直立）：
+    // 平面貼在 target 上（image 預設 plane 已經跟 anchor 對齊朝向相機，不需 orientation/offset）。
+    type: 'image',
+    asset: 'assets/images/SET5-P.png',
+    preview: 'assets/images/video-placeholder.svg',
+    // width/height 採圖片原比（2:3）置中於 target；不縮放、不填滿，
+    // 左右兩側留一點原 target 的可見區域。要填滿改 width: 1, height: 1。
+    width: 0.667,
     height: 1,
-    scale: 0.9,
     onLost: 'hide',
     isAssetReady: true
   },
