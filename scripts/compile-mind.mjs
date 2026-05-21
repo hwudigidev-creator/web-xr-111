@@ -25,7 +25,9 @@ const INPUT_ORDER = [
   'SET3.jpg',
   'SET4.jpg',
   'SET5.jpg',
-  'LinTea.png'  // markerIndex 5 — LinTea Building 平面桌卡
+  'LinTea.png', // markerIndex 5 — LinTea Building 平面桌卡
+  'ERROR.png',  // markerIndex 6 — ERROR_V1 模型（直立、模型 2× 大於圖）
+  'LogoAR.png'  // markerIndex 7 — ERROR_V1 模型（同上）
 ];
 
 const inputs = INPUT_ORDER.map((name) => join(SRC_DIR, name));

@@ -7,6 +7,21 @@
 
 ---
 
+## [v0.3.0-20260521e] - 2026-05-21
+
+### Added
+- **ERROR + LogoAR 兩個展板，共用 ERROR_V1 模型**。
+  - `public/targets/source/ERROR.png`（33 KB）、`LogoAR.png`（1.37 MB）兩張新 target 圖加入 `sets.mind`（markerIndex 6、7）。
+  - `assets/models/ERROR_V1.glb` raw 43 MB → 壓縮後 `public/assets/models/ERROR_V1.glb` 1.87 MB（-96%）。
+  - exhibits.ts 新增兩條 `error-img`、`logo-ar`，都指向同一個 ERROR_V1.glb。
+  - **`scale: 2.0`**：刻意讓模型「2× 大於 target」、可超出展板邊界。屬於設計意圖（vs SET1-5 的 0.9 收在框內）。
+- `scripts/compile-mind.mjs` 的 `INPUT_ORDER` append `ERROR.png` 與 `LogoAR.png`，重編 `sets.mind`（8 markers）。
+
+### Internal
+- bump `APP_VERSION` → `v0.3.0-20260521e`。
+
+---
+
 ## [v0.3.0-20260521d] - 2026-05-21
 
 ### Added

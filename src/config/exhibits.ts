@@ -100,6 +100,40 @@ export const exhibits: Exhibit[] = [
     onLost: 'hide',
     isAssetReady: true
   },
+  // ERROR.png 與 LogoAR.png 共用同一個 ERROR_V1 模型。
+  // 直立展板，但模型故意超出 target 範圍（scale: 2.0，模型約 2× 高於 target image）。
+  {
+    id: 'error-img',
+    name: 'ERROR',
+    zone: 'ERROR',
+    target: SETS_TARGET,
+    markerIndex: 6,
+    type: 'model',
+    asset: 'assets/models/ERROR_V1.glb',
+    preview: 'assets/images/model-placeholder.svg',
+    orientation: 'upright',
+    width: 1,
+    height: 1,
+    scale: 2.0,
+    onLost: 'hide',
+    isAssetReady: true
+  },
+  {
+    id: 'logo-ar',
+    name: 'LogoAR',
+    zone: 'ERROR',
+    target: SETS_TARGET,
+    markerIndex: 7,
+    type: 'model',
+    asset: 'assets/models/ERROR_V1.glb',
+    preview: 'assets/images/model-placeholder.svg',
+    orientation: 'upright',
+    width: 1,
+    height: 1,
+    scale: 2.0,
+    onLost: 'hide',
+    isAssetReady: true
+  },
   {
     id: 'lintea-building',
     name: 'LinTea Building',
