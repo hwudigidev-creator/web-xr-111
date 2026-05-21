@@ -7,6 +7,18 @@
 
 ---
 
+## [v0.3.0-20260521b] - 2026-05-21
+
+### Added
+- `public/targets/sets.mind`（3.4 MB），SET1–SET5 五個 marker 編譯結果。
+- `scripts/compile-mind.mjs` + `npm run compile:mind`：用 Playwright 自動跑 MindAR 官方 web compiler。發現 Playwright 預設下的 `chromium_headless_shell` 跑不了 TFjs worker（卡 0%）；直接指 Playwright 完整 chromium 則被 Windows SmartScreen 擋（spawn UNKNOWN，binary 沒簽署）。最終走 `channel: 'msedge'` 用系統 Edge（同 chromium 引擎、有簽署）跑 headed，編譯 + 下載 < 1 分鐘自動完成。
+- `playwright` 進 devDependencies；`compile:mind` 入口腳本。
+
+### Fixed
+- 上一版 deploy「無法啟動 AR：找不到 target 檔：targets/sets.mind」根因解決 — 該 .mind 檔正式入 repo。
+
+---
+
 ## [v0.3.0-20260521a] - 2026-05-21
 
 主要里程碑：SET 系列 5 個展板上線（含 SET1 的兩個隨機變體）。新增直立展板（upright）擺放模式。
