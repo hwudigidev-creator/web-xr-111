@@ -79,7 +79,7 @@ export const exhibits: Exhibit[] = [
     offsetZ: 0,
     width: 1,
     height: 1,
-    scale: 0.9,
+    scale: 0.6,
     onLost: 'hide',
     isAssetReady: true
   },
